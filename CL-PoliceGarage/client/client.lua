@@ -109,7 +109,7 @@ RegisterNetEvent("CL-PoliceGarage:Catalog", function()
     for k, v in pairs(Config.Vehicles) do
         vehicleMenu[#vehicleMenu+1] = {
             header = v.vehiclename,
-            txt = "Buy: " .. v.vehiclename .. " For: " .. v.price .. "$",
+            txt = "Buy: " .. v.vehiclename .. "<br> Price: " .. v.price .. "$",
             params = {
                 event = "CL-PoliceGarage:ChoosePayment",
                 args = {

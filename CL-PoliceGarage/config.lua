@@ -20,23 +20,18 @@ Config.Job = 'police' --The job needed to open the menu
 --DO NOT add vehicles that are not in your shared ! otherwise the qb-garages wont work
 Config.Vehicles = {
     [1] = {
-        ['vehiclename'] = "Bati", --Name
-        ['vehicle'] = "bati", --Model
+        ['vehiclename'] = "T20", --Name
+        ['vehicle'] = "t20", --Model
         ['price'] = 5000, --Price
     }, 
     [2] = {
-        ['vehiclename'] = "Test", --Name
-        ['vehicle'] = "t20", --Model
-        ['price'] = 18000, --Price
-    }, 
-    [3] = {
         ['vehiclename'] = "Police2", --Name
         ['vehicle'] = "sultan", --Model
         ['price'] = 10000, --Price
     }, 
-    [4] = {
-        ['vehiclename'] = "SultanRS", --Name
-        ['vehicle'] = "sultanrs", --Model
+    [3] = {
+        ['vehiclename'] = "Bati", --Name
+        ['vehicle'] = "bati", --Model
         ['price'] = 52000, --Price
     }, 
 }
