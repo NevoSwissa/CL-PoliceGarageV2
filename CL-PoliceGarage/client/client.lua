@@ -4,7 +4,7 @@ local InPreview = false
 
 local InMenu = false
 
-PlayerJob = {}
+local PlayerJob = {}
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
@@ -20,23 +20,17 @@ end)
 
 AddEventHandler('onClientResourceStart',function(resource)
 	if GetCurrentResourceName() == resource then
-		Citizen.CreateThread(function()
-			while true do
-				QBCore.Functions.GetPlayerData(function(PlayerData)
-					if PlayerData.job then
-						PlayerJob = PlayerData.job
-					end
-				end)
-				break
-			end
-			Citizen.Wait(1)
-		end)
+        QBCore.Functions.GetPlayerData(function(PlayerData)
+            if PlayerData.job then
+                PlayerJob = PlayerData.job
+            end
+        end)
 	end
 end)
 
-local function InZone()
+function InZone()
     for k, v in pairs(Config.RepairLocations) do
-        local pos = GetEntityCoords(GetPlayerPed(-1), true)
+        local pos = GetEntityCoords(PlayerPedId(), true)
         if (GetDistanceBetweenCoords(pos.x, pos.y, pos.z, v.coords.x, v.coords.y, v.coords.z, false) < v.distance ) then
             return true
         end
@@ -44,7 +38,7 @@ local function InZone()
     end
 end
 
-local function DrawText3D(x, y, z, text)
+function DrawText3D(x, y, z, text)
     SetTextScale(0.35, 0.35)
     SetTextFont(4)
     SetTextProportional(1)
@@ -59,7 +53,7 @@ local function DrawText3D(x, y, z, text)
     ClearDrawOrigin()
 end
 
-local function ShowHelpNotification(text)
+function ShowHelpNotification(text)
     SetTextComponentFormat("STRING")
     AddTextComponentString(text)
     DisplayHelpTextFromStringLabel(0, 0, 1, -1)
@@ -273,7 +267,6 @@ RegisterNetEvent("CL-PoliceGarage:PreviewVehicle", function(data)
                     elseif Config.SetVehicleTransparency == 'high' then
                         SetEntityAlpha(veh, 40)
                     elseif Config.SetVehicleTransparency == 'none' then
-                        
                     end
                     FreezeEntityPosition(PlayerPedId(), true)
                     SetVehicleNumberPlateText(veh, "POL"..tostring(math.random(1000, 9999)))
@@ -284,11 +277,9 @@ RegisterNetEvent("CL-PoliceGarage:PreviewVehicle", function(data)
                     Citizen.Wait(500)
                     DoScreenFadeIn(200)
                     SetVehicleUndriveable(veh, true)
-                
                     VehicleCam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", 434.03289, -1022.814, 28.730619, 50, 0.00, 282.17034, 80.00, false, 0)
                     SetCamActive(VehicleCam, true)
                     RenderScriptCams(true, true, 500, true, true)
-            
                     Citizen.CreateThread(function()
                         while true do
                             if InPreview then
@@ -338,11 +329,9 @@ RegisterNetEvent("CL-PoliceGarage:PreviewVehicle", function(data)
             Citizen.Wait(500)
             DoScreenFadeIn(200)
             SetVehicleUndriveable(veh, true)
-        
             VehicleCam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", 434.03289, -1022.814, 28.730619, 50, 0.00, 282.17034, 80.00, false, 0)
             SetCamActive(VehicleCam, true)
             RenderScriptCams(true, true, 500, true, true)
-            
             Citizen.CreateThread(function()
                 while true do
                     if InPreview then

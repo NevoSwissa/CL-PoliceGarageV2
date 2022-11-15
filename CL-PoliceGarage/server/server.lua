@@ -2,7 +2,7 @@ local QBCore = exports['qb-core']:GetCoreObject()
 
 local InMenu = false
 
-local function DiscordLog(message)
+function DiscordLog(message)
     local embed = {
         {
             ["color"] = 04255, 
@@ -22,14 +22,12 @@ local function DiscordLog(message)
 end
 
 QBCore.Functions.CreateCallback('CL-PoliceGarage:CheckIfActive', function(source, cb)
-    local src = source
-
     if not InMenu then
         TriggerEvent("CL-PoliceGarage:server:SetActive", true)
         cb(true)
     else
         cb(false)
-        TriggerClientEvent("QBCore:Notify", src, "Someone Is In The Menu Please Wait !", "error")
+        TriggerClientEvent("QBCore:Notify", source, "Someone Is In The Menu Please Wait !", "error")
     end
 end)
 
@@ -70,7 +68,7 @@ RegisterServerEvent('CL-PoliceGarage:TakeMoney', function(paymenttype, price, ve
     end    
 end)
 
-QBCore.Commands.Add('prepair', 'Repair Your Police Vehicle (Can Be Used Only In The Police Station)', {}, false, function(source, args)
+QBCore.Commands.Add('prepair', 'Repair Your Police Vehicle (Can Be Used Only In Police Station)', {}, false, function(source, args)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if Player.PlayerData.job.name == 'police' then
