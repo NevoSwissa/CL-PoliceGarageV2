@@ -316,7 +316,7 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehic
         TaskWarpPedIntoVehicle(player, veh, -1)
         TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
         SetVehicleEngineOn(veh, true, true)
-        StartLoop(veh, vehiclename, time, player)
+        StartLoop(veh, vehiclename, time, player, station)
     end, spawncoords, true)
 end)
 
@@ -541,7 +541,7 @@ RegisterNetEvent("CL-PoliceGarageV2:ChoosePayment", function(data)
     end
 end)
 
-function StartLoop(veh, vehname, time, player)
+function StartLoop(veh, vehname, time, player, station)
     local Notified = false
     local normalTime = time * 60000
     local reducedTime = math.floor(normalTime * 0.8)
@@ -560,5 +560,5 @@ function StartLoop(veh, vehname, time, player)
             QBCore.Functions.Notify(Config.Locals['Notifications']['RentWarning'] .. vehname)
             Notified = true
         end
-    until false or not PlayerRentedVehicle[player] or not PlayerJob.name == PlayerRentedVehicle[player].job
+    until false or not PlayerRentedVehicle[player] or not station == PlayerRentedVehicle[player].station
 end
