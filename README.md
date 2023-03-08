@@ -16,8 +16,7 @@ New Features:
 And much more cool features ! 
 
 Config:
-
-![image](https://user-images.githubusercontent.com/96447671/223709922-002e29fc-251c-4d75-af0c-d8a0b124b867.png)
+![image](https://user-images.githubusercontent.com/96447671/223711217-e6d064fd-6ef2-4188-80f2-8cb28914c5a0.png)
 
 Marker:
 
