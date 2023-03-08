@@ -329,7 +329,7 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, sp
             SetVehicleDirtLevel(veh, 0.0)
             TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
             SetVehicleEngineOn(veh, true, true)
-            TriggerServerEvent("CL-PoliceGarageV2:AddData", "vehiclepurchased", QBCore.Functions.GetVehicleProperties(veh), vehicle, GetHashKey(veh), QBCore.Functions.GetPlate(veh), job)
+            TriggerServerEvent("CL-PoliceGarageV2:AddData", "vehiclepurchased", vehicle, GetHashKey(veh), QBCore.Functions.GetPlate(veh), job)
         end, spawncoords, true)
     else
         QBCore.Functions.Notify(Config.Locals["Notifications"]["VehicleInSpawn"], "error")
@@ -543,12 +543,16 @@ end)
 
 function StartLoop(veh, vehname, time, player)
 	SetTimeout((time * 60000) * 0.8, function()
-        QBCore.Functions.Notify(Config.Locals['Notifications']['RentWarning'] .. vehname)
+        if PlayerRentedVehicle[player] then
+            QBCore.Functions.Notify(Config.Locals['Notifications']['RentWarning'] .. vehname)
+        end
     end)
 	SetTimeout(time * 60000, function()
-		DeleteVehicle(veh)
-		PlayerRentedVehicle[player] = nil
-		DeleteEntity(veh)
-		QBCore.Functions.Notify(Config.Locals['Notifications']['RentOver'] .. vehname .. " is over")
+        if PlayerRentedVehicle[player] then
+            DeleteVehicle(veh)
+            PlayerRentedVehicle[player] = nil
+            DeleteEntity(veh)
+            QBCore.Functions.Notify(Config.Locals['Notifications']['RentOver'] .. vehname .. " is over")
+        end
 	end)
 end

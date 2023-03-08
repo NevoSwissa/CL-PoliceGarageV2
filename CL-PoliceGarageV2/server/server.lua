@@ -19,7 +19,7 @@ local function DiscordLog(message)
     PerformHttpRequest(Config.WebHook, function(err, text, headers) end, 'POST', json.encode({username = 'CL-PoliceGarage', embeds = embed, avatar_url = Config.LogsImage}), { ['Content-Type'] = 'application/json' })
 end
 
-RegisterServerEvent("CL-PoliceGarageV2:AddData", function(type, mods, vehicle, hash, plate, job)
+RegisterServerEvent("CL-PoliceGarageV2:AddData", function(type, vehicle, hash, plate, job)
     local src = source
     if Config.BanWhenExploit and not Player.PlayerData.job.name == job then ExploitBan(src, 'Banned for exploiting') end
     if type == "vehiclepurchased" then
@@ -29,7 +29,7 @@ RegisterServerEvent("CL-PoliceGarageV2:AddData", function(type, mods, vehicle, h
             Player.PlayerData.citizenid,
             vehicle,
             hash,
-            json.encode(mods),
+            '{}',
             plate,
             0
         })

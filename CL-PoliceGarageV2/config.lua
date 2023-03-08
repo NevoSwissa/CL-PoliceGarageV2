@@ -14,7 +14,7 @@ Config.Target = "qb-target" -- The name of your target (If you renamed qb-target
 
 Config.FuelSystem = "LegacyFuel" -- Put here your fuel system LegacyFuel by default
 
-Config.SetVehicleTransparency = 'low' -- Want to make the vehicle more transparent? you have a lot of options to choose from: low, medium, high, none
+Config.SetVehicleTransparency = 'none' -- Want to make the vehicle more transparent? you have a lot of options to choose from: low, medium, high, none
 
 Config.Locals = {
     Targets = {
