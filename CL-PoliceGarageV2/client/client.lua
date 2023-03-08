@@ -309,7 +309,6 @@ end)
 RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehiclename, amount, time, realtime, spawncoords, paymenttype, job, station)
     QBCore.Functions.SpawnVehicle(vehicle, function(veh)
         local player = PlayerPedId()
-        StartLoop(veh, vehiclename, time, player)
         SetVehicleDirtLevel(veh, 0.0)
 		PlayerRentedVehicle[player] = {vehicle = veh, station = station, name = vehiclename, amount = amount, paymenttype = paymenttype, time = time, starttime = realtime, job = job}
         SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
@@ -317,6 +316,7 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehic
         TaskWarpPedIntoVehicle(player, veh, -1)
         TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
         SetVehicleEngineOn(veh, true, true)
+        StartLoop(veh, vehiclename, time, player)
     end, spawncoords, true)
 end)
 
@@ -542,17 +542,23 @@ RegisterNetEvent("CL-PoliceGarageV2:ChoosePayment", function(data)
 end)
 
 function StartLoop(veh, vehname, time, player)
-	SetTimeout((time * 60000) * 0.8, function()
-        if PlayerRentedVehicle[player] then
-            QBCore.Functions.Notify(Config.Locals['Notifications']['RentWarning'] .. vehname)
-        end
-    end)
-	SetTimeout(time * 60000, function()
-        if PlayerRentedVehicle[player] then
+    local Notified = false
+    local normalTime = time * 60000
+    local reducedTime = math.floor(normalTime * 0.8)
+    repeat
+        Wait(1000)
+        normalTime = normalTime - 1000
+        reducedTime = reducedTime - 1000
+        if normalTime <= 0 then
             DeleteVehicle(veh)
             PlayerRentedVehicle[player] = nil
             DeleteEntity(veh)
-            QBCore.Functions.Notify(Config.Locals['Notifications']['RentOver'] .. vehname .. " is over")
+            QBCore.Functions.Notify(Config.Locals['Notifications']['RentOver'] .. vehname .. " is over")           
+            break
         end
-	end)
+        if reducedTime <= 0 and not Notified then
+            QBCore.Functions.Notify(Config.Locals['Notifications']['RentWarning'] .. vehname)
+            Notified = true
+        end
+    until false or not PlayerRentedVehicle[player] or not PlayerJob.name == PlayerRentedVehicle[player].job
 end
