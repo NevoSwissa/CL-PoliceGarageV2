@@ -186,17 +186,15 @@ RegisterNetEvent('CL-PoliceGarageV2:OpenMainMenu', function(data)
             },
         }
     })
-    if PlayerRentedVehicle[PlayerPedId()] then
-        if PlayerRentedVehicle[PlayerPedId()].job == PlayerJob.name then
-            table.insert(MainMenu, {
-                header = "Return Vehicle",
-                txt = "Return your rented vehicle",
-                icon = "fa-solid fa-left-long",
-                params = {
-                    event = "CL-PoliceGarageV2:ReturnRentedVehicle",
-                }
-            })
-        end
+    if PlayerRentedVehicle[PlayerPedId()] and PlayerRentedVehicle[PlayerPedId()].station == data.station then
+        table.insert(MainMenu, {
+            header = "Return Vehicle",
+            txt = "Return your rented vehicle",
+            icon = "fa-solid fa-left-long",
+            params = {
+                event = "CL-PoliceGarageV2:ReturnRentedVehicle",
+            }
+        })
     end
     local menus = {
         [data.station .. "MainMenu"] = MainMenu
@@ -226,23 +224,41 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenRentingMenu", function(data)
                             vehiclename = k,
                             vehicle = v.Vehicle,
                             coordsinfo = data.coordsinfo,
+                            station = data.station,
+                            job = data.job,
+                        }
+                    }
+                })
+            end
+        elseif PlayerRentedVehicle[PlayerPedId()].station ~= data.station then
+            for k, v in pairs(data.rentvehicles) do
+                table.insert(RentingMenu, {
+                    header = "Rent " .. k,
+                    txt = "Rent: " .. k .. "<br> For: " .. v.PricePerMinute .. "$ (Per Minute)",
+                    icon = "fa-solid fa-car",
+                    params = {
+                        event = "CL-PoliceGarageV2:ChooseRent",
+                        args = {
+                            price = v.PricePerMinute,
+                            vehiclename = k,
+                            vehicle = v.Vehicle,
+                            coordsinfo = data.coordsinfo,
+                            station = data.station,
                             job = data.job,
                         }
                     }
                 })
             end
         end
-        if PlayerRentedVehicle[PlayerPedId()] then
-            if PlayerRentedVehicle[PlayerPedId()].job == PlayerJob.name then
-                table.insert(MainMenu, {
-                    header = "Return Vehicle",
-                    txt = "Return your rented vehicle",
-                    icon = "fa-solid fa-left-long",
-                    params = {
-                        event = "CL-PoliceGarageV2:ReturnRentedVehicle",
-                    }
-                })
-            end
+        if PlayerRentedVehicle[PlayerPedId()] and PlayerRentedVehicle[PlayerPedId()].station == data.station then
+            table.insert(RentingMenu, {
+                header = "Return Vehicle",
+                txt = "Return your rented vehicle",
+                icon = "fa-solid fa-left-long",
+                params = {
+                    event = "CL-PoliceGarageV2:ReturnRentedVehicle",
+                }
+            })
         end
         local menus = {
             [data.station .. "RentingMenu"] = RentingMenu
@@ -290,12 +306,12 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenPurchaseMenu", function(data)
     exports['qb-menu']:openMenu(menus[data.station .. "VehicleMenu"])
 end)
 
-RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehiclename, amount, time, realtime, spawncoords, paymenttype, job)
+RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehiclename, amount, time, realtime, spawncoords, paymenttype, job, station)
     QBCore.Functions.SpawnVehicle(vehicle, function(veh)
         local player = PlayerPedId()
         StartLoop(veh, vehiclename, time, player)
         SetVehicleDirtLevel(veh, 0.0)
-		PlayerRentedVehicle[player] = {vehicle = veh, name = vehiclename, amount = amount, paymenttype = paymenttype, time = time, starttime = realtime, job = job}
+		PlayerRentedVehicle[player] = {vehicle = veh, station = station, name = vehiclename, amount = amount, paymenttype = paymenttype, time = time, starttime = realtime, job = job}
         SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
         exports[Config.FuelSystem]:SetFuel(veh, 100.0)
         TaskWarpPedIntoVehicle(player, veh, -1)
@@ -468,7 +484,7 @@ RegisterNetEvent("CL-PoliceGarageV2:ChooseRent", function(data)
                     }
                 })
                 if price ~= nil then
-                    TriggerServerEvent("CL-PoliceGarageV2:RentVehicle", paymentType.paymenttype, finalPrice, data.vehiclename, data.vehicle, minutes.minutes, data.coordsinfo, data.job)
+                    TriggerServerEvent("CL-PoliceGarageV2:RentVehicle", paymentType.paymenttype, finalPrice, data.vehiclename, data.vehicle, minutes.minutes, data.coordsinfo, data.job, data.station)
                 end
             end
         else

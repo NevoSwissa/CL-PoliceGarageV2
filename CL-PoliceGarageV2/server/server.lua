@@ -38,12 +38,12 @@ RegisterServerEvent("CL-PoliceGarageV2:AddData", function(type, mods, vehicle, h
     end
 end)
 
-RegisterServerEvent('CL-PoliceGarageV2:RentVehicle', function(paymenttype, finalPrice, vehiclename, vehicle, time, coordsinfo, job)
+RegisterServerEvent('CL-PoliceGarageV2:RentVehicle', function(paymenttype, finalPrice, vehiclename, vehicle, time, coordsinfo, job, station)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
     if Config.BanWhenExploit and not Player.PlayerData.job.name == job then ExploitBan(src, 'Banned for exploiting') end
     if Player.Functions.GetMoney(paymenttype) >= finalPrice then
-        TriggerClientEvent("CL-PoliceGarageV2:SpawnRentedVehicle", src, vehicle, vehiclename, finalPrice, time, os.time(), coordsinfo['VehicleSpawn'], paymenttype, job)  
+        TriggerClientEvent("CL-PoliceGarageV2:SpawnRentedVehicle", src, vehicle, vehiclename, finalPrice, time, os.time(), coordsinfo['VehicleSpawn'], paymenttype, job, station)  
         Player.Functions.RemoveMoney(paymenttype, finalPrice)
         TriggerClientEvent('QBCore:Notify', src, vehiclename .. Config.Locals["Notifications"]["SuccessfullyRented"] .. time .. " minutes", "success")  
         DiscordLog('New Vehicle Rented By: **'..GetPlayerName(src)..'** ID: **' ..src.. '** Bought: **' ..vehiclename.. '** For: **' ..finalPrice.. '$**'..'** Minutes: **'..time) 
