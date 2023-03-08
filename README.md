@@ -1,40 +1,40 @@
-# CL-PoliceGarage
-Police Garage System With Database Support
+# CL-PoliceGarageV2
+Police Garages System With Database Support
 
 Preview: https://youtu.be/vlxxxt7v5x8
 
-This script is fully open source. the only thing I want is please do not resell that, im not asking for a lot here.
+The new version of the script includes all the previous features + 
 
-Features:
-- You Can Add As Many Vehicles As You Like Via Config File
-- All The Vehicles Saved To Your Database
-- Preview Mode
-- Discord Logs
-- You Have A Lot Of Options To Choose From Via Config File
-- And More
+New Features:
+- Multiple garages now available to create. The script isnt limited to 1 garage
+- Ranks. Now vehicles can have ranks in order to purchase them the player has to have the vehicle required rank
+- Vehicle renting. Vehicle renting system where players choose the minutes they want to rent a vehicle for with an option to return the vehicle for a refund
+- Blips can now be added & disabled
+- Secured events with bans and logs
+- Now work with qb-target / marker. You can choose which type of interaction method you want a qb-target ped or a standalone gta native marker
+
+And much more cool features ! 
 
 Photos:
 
 Config:
-![image](https://user-images.githubusercontent.com/96447671/161090809-8834860c-f2d6-4df3-bce5-fc0152e56b12.png)
+![image](https://user-images.githubusercontent.com/96447671/223709922-002e29fc-251c-4d75-af0c-d8a0b124b867.png)
 
 Marker:
-![image](https://user-images.githubusercontent.com/96447671/161090885-54b1c53e-31c2-4817-b822-286639fac2f6.png)
+Now theres an option to choose a gta marker / qb-target ped
+![image](https://user-images.githubusercontent.com/96447671/223710177-506d27ae-8d59-49af-b086-77df16792061.png)
+![image2](https://user-images.githubusercontent.com/96447671/223710184-70eca8c8-1c60-45ff-acf7-5dfc0df15b5e.png)
 
 Main Menu:
-![image](https://user-images.githubusercontent.com/96447671/161090918-5b48f4c8-a1d9-40c2-810e-51621f6a8389.png)
-
-Preview Menu:
-![image](https://user-images.githubusercontent.com/96447671/161090964-d6b90482-301d-457e-8bbb-c36771cbd076.png)
-
-Buy Menu:
-![image](https://user-images.githubusercontent.com/96447671/161091037-a416c3a4-08ff-4b7b-9aa2-035ad8f655e5.png)
-
-Discord Logs:
-![image](https://user-images.githubusercontent.com/96447671/161091084-b46837b4-ee4e-4334-a540-49c4a0a50f48.png)
-
-Preview Mode: (You Can Choose The Transparency Via Config File)
-![image](https://user-images.githubusercontent.com/96447671/161091160-c52a37c5-6a31-419c-a70f-93beea615fe8.png)
+![image](https://user-images.githubusercontent.com/96447671/223710386-fd3b3b2b-c9f6-46a1-96c8-030e50dda1a1.png)
 
 
+Renting Menu:
+![image2](https://user-images.githubusercontent.com/96447671/223710418-c76c0508-281d-4d19-b370-d18b45b4c40c.png)
+![image](https://user-images.githubusercontent.com/96447671/223710490-466464c8-f4b2-4a05-b23e-d3e5bb5a1bcf.png)
+
+
+Vehicle Purchase Menu:
+![image2](https://user-images.githubusercontent.com/96447671/223710661-0529676f-4c3d-4141-9af7-ca698a3f912f.png)
+![image](https://user-images.githubusercontent.com/96447671/223710703-f168fb46-5b12-4000-bfa8-48104776d54a.png)
 
