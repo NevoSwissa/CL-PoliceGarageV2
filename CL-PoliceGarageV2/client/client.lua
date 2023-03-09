@@ -108,6 +108,7 @@ CreateThread(function()
                         rentvehicles = v.VehiclesInformation['RentVehicles'],
                         purchasevehicles = v.VehiclesInformation['PurchaseVehicles'],
                         coordsinfo = v.VehiclesInformation['SpawnCoords'],
+                        useownable = v.UseOwnable,
                         station = k,
                         canInteract = function()
                             if PlayerJob.name == v.JobRequired then
@@ -136,6 +137,7 @@ CreateThread(function()
                                     coordsinfo = v.VehiclesInformation['SpawnCoords'],
                                     station = k,
                                     job = v.JobRequired,
+                                    useownable = v.UseOwnable,
                                 }
                                 TriggerEvent("CL-PoliceGarageV2:OpenMainMenu", Data)
                             end
@@ -183,6 +185,9 @@ RegisterNetEvent('CL-PoliceGarageV2:OpenMainMenu', function(data)
                 coordsinfo = data.coordsinfo,
                 station = data.station,
                 job = data.job,
+                useownable = data.useownable,
+                userent = data.userent,
+                rentvehicles = data.rentvehicles,
             },
         }
     })
@@ -295,6 +300,10 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenPurchaseMenu", function(data)
                         coordsinfo = data.coordsinfo,
                         station = data.station,
                         job = data.job,
+                        useownable = data.useownable,
+                        userent = data.userent,
+                        rentvehicles = data.rentvehicles,
+                        purchasevehicles = data.purchasevehicles,
                     }
                 }
             })
@@ -320,7 +329,7 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehic
     end, spawncoords, true)
 end)
 
-RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job)
+RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job, useownable)
     if QBCore.Functions.SpawnClear(vector3(spawncoords.x, spawncoords.y, spawncoords.z), checkradius) then
         QBCore.Functions.SpawnVehicle(vehicle, function(veh)
             SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
@@ -329,7 +338,9 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, sp
             SetVehicleDirtLevel(veh, 0.0)
             TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
             SetVehicleEngineOn(veh, true, true)
-            TriggerServerEvent("CL-PoliceGarageV2:AddData", "vehiclepurchased", vehicle, GetHashKey(veh), QBCore.Functions.GetPlate(veh), job)
+            if useownable then
+                TriggerServerEvent("CL-PoliceGarageV2:AddData", "vehiclepurchased", vehicle, GetHashKey(veh), QBCore.Functions.GetPlate(veh), job)
+            end
         end, spawncoords, true)
     else
         QBCore.Functions.Notify(Config.Locals["Notifications"]["VehicleInSpawn"], "error")
@@ -338,21 +349,25 @@ end)
 
 RegisterNetEvent("CL-PoliceGarageV2:ReturnRentedVehicle", function()
 	local player = PlayerPedId()
-    QBCore.Functions.TriggerCallback('CL-PoliceGarageV2:GetRealTime', function(result)
-        if not PlayerRentedVehicle[player] then
-            QBCore.Functions.Notify(Config.Locals['Notifications']['NoRentedVehicle'])
-            return
-        end
-        TaskLeaveVehicle(player, PlayerRentedVehicle[player].vehicle, 1)
-        Citizen.Wait(2000)
-        local remainingTime = (PlayerRentedVehicle[player].time * 60) - (result - PlayerRentedVehicle[player].starttime)
-        local refund = math.floor(PlayerRentedVehicle[player].amount * (remainingTime / (PlayerRentedVehicle[player].time * 60)))
-        QBCore.Functions.Notify(Config.Locals['Notifications']['VehicleReturned'] .. PlayerRentedVehicle[player].name .. " Refund amount : " .. refund .. "$")
-        TriggerServerEvent("CL-PoliceGarageV2:RefundRent", PlayerRentedVehicle[player].paymenttype, refund, GetPlayerServerId(PlayerId()), PlayerRentedVehicle[player].job)
-        DeleteVehicle(PlayerRentedVehicle[player].vehicle)
-        DeleteEntity(PlayerRentedVehicle[player].vehicle)
-        PlayerRentedVehicle[player] = nil
-    end)
+    if IsPedInAnyVehicle(player, false) then
+        QBCore.Functions.TriggerCallback('CL-PoliceGarageV2:GetRealTime', function(result)
+            if not PlayerRentedVehicle[player] then
+                QBCore.Functions.Notify(Config.Locals['Notifications']['NoRentedVehicle'])
+                return
+            end
+            TaskLeaveVehicle(player, PlayerRentedVehicle[player].vehicle, 1)
+            Citizen.Wait(2000)
+            local remainingTime = (PlayerRentedVehicle[player].time * 60) - (result - PlayerRentedVehicle[player].starttime)
+            local refund = math.floor(PlayerRentedVehicle[player].amount * (remainingTime / (PlayerRentedVehicle[player].time * 60)))
+            QBCore.Functions.Notify(Config.Locals['Notifications']['VehicleReturned'] .. PlayerRentedVehicle[player].name .. " Refund amount : " .. refund .. "$")
+            TriggerServerEvent("CL-PoliceGarageV2:RefundRent", PlayerRentedVehicle[player].paymenttype, refund, GetPlayerServerId(PlayerId()), PlayerRentedVehicle[player].job)
+            DeleteVehicle(PlayerRentedVehicle[player].vehicle)
+            DeleteEntity(PlayerRentedVehicle[player].vehicle)
+            PlayerRentedVehicle[player] = nil
+        end)
+    else
+        QBCore.Functions.Notify(Config.Locals['Notifications']['NotInVehicle'], "error")
+    end
 end)
 
 RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
@@ -395,6 +410,16 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                         DoScreenFadeIn(200)
                         SetCamActive(VehicleCam, false)
                         RenderScriptCams(false, false, 1, true, true)
+                        local Data = {
+                            userent = data.userent,
+                            rentvehicles = data.rentvehicles,
+                            purchasevehicles = data.purchasevehicles,
+                            coordsinfo = data.coordsinfo,
+                            job = data.job,
+                            station = data.station,
+                            useownable = data.useownable,
+                        }
+                        TriggerEvent("CL-PoliceGarageV2:OpenMainMenu", Data)
                         break
                     end
                     if IsControlJustReleased(0, 38) then
@@ -414,6 +439,7 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                             coordsinfo = data.coordsinfo,
                             job = data.job,
                             station = data.station,
+                            useownable = data.useownable,
                         }
                         TriggerEvent("CL-PoliceGarageV2:ChoosePayment", VehicleData)
                         break
@@ -536,7 +562,7 @@ RegisterNetEvent("CL-PoliceGarageV2:ChoosePayment", function(data)
             }
         })
         if price ~= nil then
-            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station)
+            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station, data.useownable)
         end
     end
 end)

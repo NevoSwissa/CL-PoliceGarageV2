@@ -34,6 +34,7 @@ Config.Locals = {
         SuccessfullyRented = " successfully rented for ",
         SuccessfullyBought = " successfully bought from ",
         VehicleInSpawn = 'Theres a vehicle in the spawn area !',
+        NotInVehicle = "You are not in any vehicle !",
     },
 }
 
@@ -42,6 +43,7 @@ Config.Locations = {
         ["MRPD"] = {
             UseTarget = true, -- Set to false to use the Marker for this station
             UseRent = true, -- Set to false to disable the rent feature for this station
+            UseOwnable = false, -- Set to false to disable ownable vehicles 
             JobRequired = "police", -- The job required for this station garage
             VehiclesInformation = {
                 RentVehicles = { -- Rent vehicles information, if UseRent set to true as : UseRent = true
@@ -115,6 +117,7 @@ Config.Locations = {
         ["EMS"] = {
             UseTarget = true, -- Set to false to use the Marker for this station
             UseRent = true, -- Set to false to disable the rent feature for this station
+            UseOwnable = true, -- Set to false to disable ownable vehicles 
             JobRequired = "ambulance", -- The job required for this station garage
             VehiclesInformation = {
                 RentVehicles = { -- Rent vehicles information, if UseRent set to true as : UseRent = true

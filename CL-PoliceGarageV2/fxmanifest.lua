@@ -2,8 +2,8 @@ fx_version 'adamant'
 
 game 'gta5'
 lua54 'yes'
-author "NevoSwissa#0111"
-description "A Simple Police Garage Made By NevoSwissa#0111 For CloudDevelopment"
+author "NevoSwissa#8239"
+description "CL-PoliceGarageV2 or JobGarage it can do anything related to creating garages !"
 
 client_scripts {
     'client/client.lua',
