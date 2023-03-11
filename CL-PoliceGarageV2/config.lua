@@ -43,7 +43,7 @@ Config.Locations = {
         ["MRPD"] = {
             UseTarget = true, -- Set to false to use the Marker for this station
             UseRent = true, -- Set to false to disable the rent feature for this station
-            UseOwnable = false, -- Set to false to disable ownable vehicles 
+            UseOwnable = true, -- Set to false to disable ownable vehicles 
             JobRequired = "police", -- The job required for this station garage
             VehiclesInformation = {
                 RentVehicles = { -- Rent vehicles information, if UseRent set to true as : UseRent = true

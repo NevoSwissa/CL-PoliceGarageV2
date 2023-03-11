@@ -85,41 +85,54 @@ end
 CreateThread(function()
     for k, v in pairs(Config.Locations['Stations']) do
         if v.UseTarget then
-            RequestModel(v.GeneralInformation['TargetInformation']['Ped'])
-            while not HasModelLoaded(v.GeneralInformation['TargetInformation']['Ped']) do
-                Wait(0)
+            local pedCoords = v.GeneralInformation['TargetInformation']['Coords']
+            local pedModel = v.GeneralInformation['TargetInformation']['Ped']
+            local pedExists = false
+            for i, ped in ipairs(PolicePeds) do
+                if DoesEntityExist(ped) and GetEntityModel(ped) == pedModel and GetEntityCoords(ped) == pedCoords then
+                    pedExists = true
+                    break
+                end
             end
-            PolicePeds[k] = CreatePed(0, v.GeneralInformation['TargetInformation']['Ped'], v.GeneralInformation['TargetInformation']['Coords'].x, v.GeneralInformation['TargetInformation']['Coords'].y, v.GeneralInformation['TargetInformation']['Coords'].z, v.GeneralInformation['TargetInformation']['Coords'].w, true, false)
-            TaskLookAtEntity(PolicePeds[k], PlayerPedId(), -1)
-            FreezeEntityPosition(PolicePeds[k], true)
-            SetEntityInvincible(PolicePeds[k], true)
-            SetBlockingOfNonTemporaryEvents(PolicePeds[k], true)
-            TaskStartScenarioInPlace(PolicePeds[k], v.GeneralInformation['TargetInformation']['Scenario'], 0, true)
-            exports[Config.Target]:AddEntityZone("cl_policegaragev2_interactped"..k, PolicePeds[k], {
-                name = "cl_policegaragev2_interactped"..k,
-            }, {
-              options = {
-                    { 
-                        event = "CL-PoliceGarageV2:OpenMainMenu",
-                        icon = Config.Locals['Targets']['GarageTarget']['Icon'],
-                        label = Config.Locals['Targets']['GarageTarget']['Label'] .. k,
-                        job = v.RequiredJob,
-                        userent = v.UseRent,
-                        rentvehicles = v.VehiclesInformation['RentVehicles'],
-                        purchasevehicles = v.VehiclesInformation['PurchaseVehicles'],
-                        coordsinfo = v.VehiclesInformation['SpawnCoords'],
-                        useownable = v.UseOwnable,
-                        station = k,
-                        canInteract = function()
-                            if PlayerJob.name == v.JobRequired then
-                                return true
-                            end
-                            return false
-                        end,
+            if not pedExists then
+                RequestModel(pedModel)
+                while not HasModelLoaded(pedModel) do
+                    Wait(0)
+                end
+                local ped = CreatePed(0, pedModel, pedCoords.x, pedCoords.y, pedCoords.z, pedCoords.w, true, false)
+                TaskLookAtEntity(ped, PlayerPedId(), -1)
+                FreezeEntityPosition(ped, true)
+                SetEntityInvincible(ped, true)
+                SetBlockingOfNonTemporaryEvents(ped, true)
+                TaskStartScenarioInPlace(ped, v.GeneralInformation['TargetInformation']['Scenario'], 0, true)
+                table.insert(PolicePeds, ped)
+        
+                exports[Config.Target]:AddEntityZone("cl_policegaragev2_interactped"..k, ped, {
+                    name = "cl_policegaragev2_interactped"..k,
+                }, {
+                    options = {
+                        { 
+                            event = "CL-PoliceGarageV2:OpenMainMenu",
+                            icon = Config.Locals['Targets']['GarageTarget']['Icon'],
+                            label = Config.Locals['Targets']['GarageTarget']['Label'] .. k,
+                            job = v.RequiredJob,
+                            userent = v.UseRent,
+                            rentvehicles = v.VehiclesInformation['RentVehicles'],
+                            purchasevehicles = v.VehiclesInformation['PurchaseVehicles'],
+                            coordsinfo = v.VehiclesInformation['SpawnCoords'],
+                            useownable = v.UseOwnable,
+                            station = k,
+                            canInteract = function()
+                                if PlayerJob.name == v.JobRequired then
+                                    return true
+                                end
+                                return false
+                            end,
+                        },
                     },
-                },
-                distance = Config.Locals['Targets']['GarageTarget']['Distance'],
-            })
+                    distance = Config.Locals['Targets']['GarageTarget']['Distance'],
+                })
+            end
         else
             while true do
                 local playerPos = GetEntityCoords(PlayerPedId())
