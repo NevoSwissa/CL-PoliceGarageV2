@@ -1,5 +1,5 @@
 # CL-PoliceGarageV2
-Police Garages System With Database Support
+Advanced job garages system with database integration (Can be disabled for each garage)
 
 Preview: https://youtu.be/dxIrnEEmx3k
 
