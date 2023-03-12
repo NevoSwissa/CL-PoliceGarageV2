@@ -100,14 +100,13 @@ CreateThread(function()
                     Wait(10)
                 end
                 local ped = CreatePed(0, pedModel, pedCoords.x, pedCoords.y, pedCoords.z, pedCoords.w, false, true)
+                PlaceObjectOnGroundProperly(ped)
                 FreezeEntityPosition(ped, true)
                 SetEntityInvincible(ped, true)
                 SetBlockingOfNonTemporaryEvents(ped, true)
                 TaskStartScenarioInPlace(ped, v.GeneralInformation['TargetInformation']['Scenario'], 0, true)
                 table.insert(PolicePeds, ped)
-                exports[Config.Target]:AddEntityZone("cl_policegaragev2_interactped"..k, ped, {
-                    name = "cl_policegaragev2_interactped"..k,
-                }, {
+                exports[Config.Target]:AddTargetEntity(ped, {
                     options = {
                         { 
                             event = "CL-PoliceGarageV2:OpenMainMenu",
