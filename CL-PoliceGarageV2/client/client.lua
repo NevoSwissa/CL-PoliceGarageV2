@@ -95,18 +95,16 @@ CreateThread(function()
                 end
             end
             if not pedExists then
-                RequestModel(pedModel)
+                QBCore.Functions.LoadModel(pedModel)
                 while not HasModelLoaded(pedModel) do
-                    Wait(0)
+                    Wait(10)
                 end
-                local ped = CreatePed(0, pedModel, pedCoords.x, pedCoords.y, pedCoords.z, pedCoords.w, true, false)
-                TaskLookAtEntity(ped, PlayerPedId(), -1)
+                local ped = CreatePed(0, pedModel, pedCoords.x, pedCoords.y, pedCoords.z, pedCoords.w, false, true)
                 FreezeEntityPosition(ped, true)
                 SetEntityInvincible(ped, true)
                 SetBlockingOfNonTemporaryEvents(ped, true)
                 TaskStartScenarioInPlace(ped, v.GeneralInformation['TargetInformation']['Scenario'], 0, true)
                 table.insert(PolicePeds, ped)
-        
                 exports[Config.Target]:AddEntityZone("cl_policegaragev2_interactped"..k, ped, {
                     name = "cl_policegaragev2_interactped"..k,
                 }, {
