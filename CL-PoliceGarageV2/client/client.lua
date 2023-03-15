@@ -82,8 +82,30 @@ function Blips()
     end
 end
 
+function SetTrunkItemsInfo(trunkitems)
+	local items = {}
+	for _, item in pairs(trunkitems) do
+		local itemInfo = QBCore.Shared.Items[item.name:lower()]
+		items[item.slot] = {
+			name = itemInfo["name"],
+			amount = tonumber(item.amount),
+			info = item.info,
+			label = itemInfo["label"],
+			description = itemInfo["description"] and itemInfo["description"] or "",
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
+			image = itemInfo["image"],
+			slot = item.slot,
+		}
+	end
+	return items
+end
+
 CreateThread(function()
     for k, v in pairs(Config.Locations['Stations']) do
+        if not v.UsePurchasable and not v.UseRent then return end
         if v.UseTarget then
             local pedCoords = v.GeneralInformation['TargetInformation']['Coords']
             local pedModel = v.GeneralInformation['TargetInformation']['Ped']
@@ -114,10 +136,12 @@ CreateThread(function()
                             label = Config.Locals['Targets']['GarageTarget']['Label'] .. k,
                             job = v.RequiredJob,
                             userent = v.UseRent,
+                            usepurchasable = v.UsePurchasable,
+                            useownable = v.UseOwnable,
+                            useliveries = v.UseLiveries,
                             rentvehicles = v.VehiclesInformation['RentVehicles'],
                             purchasevehicles = v.VehiclesInformation['PurchaseVehicles'],
                             coordsinfo = v.VehiclesInformation['SpawnCoords'],
-                            useownable = v.UseOwnable,
                             station = k,
                             canInteract = function()
                                 if PlayerJob.name == v.JobRequired then
@@ -148,6 +172,8 @@ CreateThread(function()
                                     station = k,
                                     job = v.JobRequired,
                                     useownable = v.UseOwnable,
+                                    usepurchasable = v.UsePurchasable,
+                                    useliveries = v.UseLiveries,
                                 }
                                 TriggerEvent("CL-PoliceGarageV2:OpenMainMenu", Data)
                             end
@@ -180,28 +206,51 @@ RegisterNetEvent('CL-PoliceGarageV2:OpenMainMenu', function(data)
                     coordsinfo = data.coordsinfo,
                     station = data.station,
                     job = data.job,
+                    userent = data.userent,
+                    purchasevehicles = data.purchasevehicles,
+                    useownable = data.useownable,
+                    useliveries = data.useliveries,
+                    usepurchasable = data.usepurchasable,
                 },
             }
         })
     end
-    table.insert(MainMenu, {
-        header = "Purchase Vehicles",
-        txt = "View and purchase vehicles to use as your own",
-        icon = "fa-solid fa-money-check-dollar",
-        params = {
-            event = "CL-PoliceGarageV2:OpenPurchaseMenu",
-            args = {
-                purchasevehicles = data.purchasevehicles,
-                coordsinfo = data.coordsinfo,
-                station = data.station,
-                job = data.job,
-                useownable = data.useownable,
-                userent = data.userent,
-                rentvehicles = data.rentvehicles,
-            },
-        }
-    })
-    if PlayerRentedVehicle[PlayerPedId()] and PlayerRentedVehicle[PlayerPedId()].station == data.station then
+    if data.usepurchasable then
+        table.insert(MainMenu, {
+            header = "Purchase Vehicles",
+            txt = "View and purchase vehicles to use as your own",
+            icon = "fa-solid fa-money-check-dollar",
+            params = {
+                event = "CL-PoliceGarageV2:OpenPurchaseMenu",
+                args = {
+                    purchasevehicles = data.purchasevehicles,
+                    coordsinfo = data.coordsinfo,
+                    station = data.station,
+                    job = data.job,
+                    useownable = data.useownable,
+                    usepurchasable = data.usepurchasable,
+                    useliveries = data.useliveries,
+                    userent = data.userent,
+                    rentvehicles = data.rentvehicles,
+                },
+            }
+        })
+    end
+    if IsPedInAnyVehicle(PlayerPedId(), false) and data.useliveries then
+        table.insert(MainMenu, {
+            header = "Choose Livery",
+            txt = "Change your vehicle livery",
+            icon = "fa-solid fa-spray-can",
+            params = {
+                event = "CL-PoliceGarageV2:StartLiverySelection",
+                args = {
+                    vehicle = GetVehiclePedIsIn(PlayerPedId(), false),
+                    coordsinfo = data.coordsinfo,
+                },
+            }
+        })
+    end
+    if PlayerRentedVehicle[PlayerPedId()] and PlayerRentedVehicle[PlayerPedId()].station == data.station and data.userent then
         table.insert(MainMenu, {
             header = "Return Vehicle",
             txt = "Return your rented vehicle",
@@ -215,6 +264,58 @@ RegisterNetEvent('CL-PoliceGarageV2:OpenMainMenu', function(data)
         [data.station .. "MainMenu"] = MainMenu
     }
     exports['qb-menu']:openMenu(menus[data.station .. "MainMenu"])
+end)
+
+RegisterNetEvent("CL-PoliceGarageV2:StartLiverySelection", function(data)
+    if QBCore.Functions.SpawnClear(vector3(data.coordsinfo['PreviewSpawn'].x, data.coordsinfo['PreviewSpawn'].y, data.coordsinfo['PreviewSpawn'].z), data.coordsinfo['CheckRadius']) then
+        DoScreenFadeOut(700)
+        while not IsScreenFadedOut() do
+            Citizen.Wait(0)
+        end
+        SetPedCoordsKeepVehicle(PlayerPedId(), data.coordsinfo['PreviewSpawn'].x, data.coordsinfo['PreviewSpawn'].y, data.coordsinfo['PreviewSpawn'].z)
+        SetEntityHeading(data.vehicle, data.coordsinfo['PreviewSpawn'].w)
+        PlaceObjectOnGroundProperly(data.vehicle)
+        FreezeEntityPosition(data.vehicle, true)
+        SetEntityCollision(data.vehicle, false, true)
+        DoScreenFadeIn(700)
+        local oldLivery = GetVehicleLivery(data.vehicle)
+        local currentLivery = oldLivery
+        Citizen.CreateThread(function()
+            while true do
+                ShowHelpNotification("Switch livery ~INPUT_PICKUP~. Confirm ~INPUT_MOVE_DOWN_ONLY~. Cancel ~INPUT_FRONTEND_RRIGHT~")
+                if IsControlJustReleased(0, 177) then
+                    FreezeEntityPosition(data.vehicle, false)
+                    SetEntityCollision(data.vehicle, true, true)
+                    SetVehicleLivery(data.vehicle, oldLivery)
+                    break
+                end
+                if IsControlJustReleased(0, 31) then
+                    SetVehicleLivery(data.vehicle, currentLivery)
+                    FreezeEntityPosition(data.vehicle, false)
+                    SetEntityCollision(data.vehicle, true, true)
+                    QBCore.Functions.Notify(Config.Locals['Notifications']['LiverySwapped'], "success")
+                    break
+                end
+                if IsControlJustReleased(0, 51) then
+                    currentLivery = (currentLivery + 1) % (GetVehicleLiveryCount(data.vehicle) - 1)
+                    if currentLivery == 0 then
+                        currentLivery = 1
+                    end
+                    SetVehicleLivery(data.vehicle, currentLivery)
+                end
+                if not IsPedInAnyVehicle(PlayerPedId()) then
+                    FreezeEntityPosition(data.vehicle, false)
+                    SetEntityCollision(data.vehicle, true, true)
+                    SetVehicleLivery(data.vehicle, oldLivery)
+                    QBCore.Functions.Notify(Config.Locals['Notifications']['LeftVehicle'], "error")
+                    break
+                end
+                Wait(0)
+            end
+        end)
+    else
+        QBCore.Functions.Notify(Config.Locals["Notifications"]["VehicleInSpawn"], "error")
+    end
 end)
 
 RegisterNetEvent("CL-PoliceGarageV2:OpenRentingMenu", function(data)
@@ -275,6 +376,24 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenRentingMenu", function(data)
                 }
             })
         end
+        table.insert(RentingMenu, {
+            header = "Go Back",
+            icon = "fa-solid fa-left-long",
+            params = {
+                event = "CL-PoliceGarageV2:OpenMainMenu",
+                args = {
+                    userent = data.userent,
+                    rentvehicles = data.rentvehicles,
+                    purchasevehicles = data.purchasevehicles,
+                    coordsinfo = data.coordsinfo,
+                    job = data.job,
+                    station = data.station,
+                    useownable = data.useownable,
+                    usepurchasable = data.usepurchasable,
+                    useliveries = data.useliveries,
+                },
+            },
+        })
         local menus = {
             [data.station .. "RentingMenu"] = RentingMenu
         }
@@ -307,10 +426,13 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenPurchaseMenu", function(data)
                         price = v.TotalPrice,
                         vehiclename = k,
                         vehicle = v.Vehicle,
+                        trunkitems = v.TrunkItems,
                         coordsinfo = data.coordsinfo,
                         station = data.station,
                         job = data.job,
                         useownable = data.useownable,
+                        useliveries = data.useliveries,
+                        usepurchasable = data.usepurchasable,
                         userent = data.userent,
                         rentvehicles = data.rentvehicles,
                         purchasevehicles = data.purchasevehicles,
@@ -319,6 +441,24 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenPurchaseMenu", function(data)
             })
         end
     end
+    table.insert(VehicleMenu, {
+        header = "Go Back",
+        icon = "fa-solid fa-left-long",
+        params = {
+            event = "CL-PoliceGarageV2:OpenMainMenu",
+            args = {
+                userent = data.userent,
+                rentvehicles = data.rentvehicles,
+                purchasevehicles = data.purchasevehicles,
+                coordsinfo = data.coordsinfo,
+                job = data.job,
+                station = data.station,
+                useownable = data.useownable,
+                usepurchasable = data.usepurchasable,
+                useliveries = data.useliveries,
+            },
+        },
+    })
     local menus = {
         [data.station .. "VehicleMenu"] = VehicleMenu
     }
@@ -339,15 +479,19 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehic
     end, spawncoords, true)
 end)
 
-RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job, useownable)
+RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job, useownable, trunkitems)
     if QBCore.Functions.SpawnClear(vector3(spawncoords.x, spawncoords.y, spawncoords.z), checkradius) then
         QBCore.Functions.SpawnVehicle(vehicle, function(veh)
             SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
             exports[Config.FuelSystem]:SetFuel(veh, 100.0)
             TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+            SetVehicleModKit(veh, 0)
             SetVehicleDirtLevel(veh, 0.0)
             TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
             SetVehicleEngineOn(veh, true, true)
+            if trunkitems then
+                TriggerServerEvent("inventory:server:addTrunkItems", QBCore.Functions.GetPlate(veh), SetTrunkItemsInfo(trunkitems))
+            end
             if useownable then
                 TriggerServerEvent("CL-PoliceGarageV2:AddData", "vehiclepurchased", vehicle, GetHashKey(veh), QBCore.Functions.GetPlate(veh), job)
             end
@@ -399,6 +543,7 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
             exports[Config.FuelSystem]:SetFuel(veh, 0.0)
             SetVehicleDirtLevel(veh, 0.0)
             FreezeEntityPosition(veh, true)
+            SetEntityCollision(veh, false, true)
             SetVehicleEngineOn(veh, false, false)
             DoScreenFadeOut(200)
             Citizen.Wait(500)
@@ -428,6 +573,8 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                             job = data.job,
                             station = data.station,
                             useownable = data.useownable,
+                            usepurchasable = data.usepurchasable,
+                            useliveries = data.useliveries,
                         }
                         TriggerEvent("CL-PoliceGarageV2:OpenMainMenu", Data)
                         break
@@ -450,6 +597,7 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                             job = data.job,
                             station = data.station,
                             useownable = data.useownable,
+                            trunkitems = data.trunkitems,
                         }
                         TriggerEvent("CL-PoliceGarageV2:ChoosePayment", VehicleData)
                         break
@@ -572,7 +720,7 @@ RegisterNetEvent("CL-PoliceGarageV2:ChoosePayment", function(data)
             }
         })
         if price ~= nil then
-            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station, data.useownable)
+            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station, data.useownable, data.trunkitems)
         end
     end
 end)

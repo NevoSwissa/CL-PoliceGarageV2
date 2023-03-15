@@ -27,23 +27,27 @@ Config.Locals = {
 
     Notifications = {
         RentOver = "The rent time for ",
-        RentWarning = "Return the vehicle or it will get deleted ! vehicle : ",
+        RentWarning = "Return the vehicle or it will get deleted ! vehicle ",
         NoRentedVehicle = "There are no rented vehicles on your name",
         NoMoney = "You dont have enough money",
-        VehicleReturned = "Vehicle returned. Vehicle : ",
+        VehicleReturned = "Vehicle returned. Vehicle ",
         SuccessfullyRented = " successfully rented for ",
         SuccessfullyBought = " successfully bought from ",
         VehicleInSpawn = 'Theres a vehicle in the spawn area !',
         NotInVehicle = "You are not in any vehicle !",
+        LiverySwapped = "Vehicle livery has been successfully swapped",
+        LeftVehicle = "You have left the vehicle",
     },
 }
 
 Config.Locations = {
     Stations = {
-        ["MRPD"] = {
+        ["MRPD"] = { -- Full template, inculdes all script features
             UseTarget = true, -- Set to false to use the Marker for this station
-            UseRent = true, -- Set to false to disable the rent feature for this station
+            UseRent = true, -- Set to false to disable the rent feature for this station (Garage WONT WORK if UseRent and UsePurchasable are set to false)
             UseOwnable = true, -- Set to false to disable ownable vehicles 
+            UsePurchasable = true, -- Set to false to disable purchasable vehicles (Garage WONT WORK if UseRent and UsePurchasable are set to false)
+            UseLiveries = true, -- Set to false to disable the livery menu
             JobRequired = "police", -- The job required for this station garage
             VehiclesInformation = {
                 RentVehicles = { -- Rent vehicles information, if UseRent set to true as : UseRent = true
@@ -53,20 +57,19 @@ Config.Locations = {
                     }, 
                 },
                 PurchaseVehicles = { -- Purchasable vehicles, make sure you have the vehicle information set in qb-core > shared > vehicles.lua
-                    ["FBI"] = { -- Vehicle name goes here
-                        Vehicle = "fbi", -- The vehicle to spawn
-                        TotalPrice = 15000, -- The total price it costs to buy this vehicle
-                        Rank = 1, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
-                    }, 
-                    ["FBI 2"] = {
-                        Vehicle = "fbi2", -- The vehicle to spawn
-                        TotalPrice = 20000, -- The total price it costs to buy this vehicle
-                        Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
-                    }, 
                     ["Police Vehicle 1"] = {
                         Vehicle = "police", -- The vehicle to spawn
                         TotalPrice = 5000, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
+                        TrunkItems = { -- Trunk items (This is totally optional)
+                            [1] = {
+                                name = "heavyarmor",
+                                amount = 2,
+                                info = {},
+                                type = "item",
+                                slot = 1,
+                            },
+                        },
                     }, 
                     ["Police Vehicle 2"] = {
                         Vehicle = "police2", -- The vehicle to spawn
@@ -77,11 +80,6 @@ Config.Locations = {
                         Vehicle = "police3", -- The vehicle to spawn
                         TotalPrice = 10000, -- The total price it costs to buy this vehicle
                         Rank = 2, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
-                    }, 
-                    ["Police T"] = {
-                        Vehicle = "policet", -- The vehicle to spawn
-                        TotalPrice = 6000, -- The total price it costs to buy this vehicle
-                        Rank = 1, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
                     }, 
                 },
                 SpawnCoords = {
@@ -116,44 +114,49 @@ Config.Locations = {
         },
         ["EMS"] = {
             UseTarget = true, -- Set to false to use the Marker for this station
-            UseRent = true, -- Set to false to disable the rent feature for this station
+            UseRent = false, -- Set to false to disable the rent feature for this station (Garage WONT WORK if UseRent and UsePurchasable are set to false)
             UseOwnable = true, -- Set to false to disable ownable vehicles 
+            UsePurchasable = true, -- Set to false to disable purchasable vehicles (Garage WONT WORK if UseRent and UsePurchasable are set to false)
+            UseLiveries = true, -- Set to false to disable the livery menu
             JobRequired = "ambulance", -- The job required for this station garage
             VehiclesInformation = {
-                RentVehicles = { -- Rent vehicles information, if UseRent set to true as : UseRent = true
-                    ["Ambulance"] = {
-                        Vehicle = "ambulance", -- The vehicle to spawn
-                        PricePerMinute = 150, -- The price to charge for that vehicle every minute
-                    }, 
-                },
                 PurchaseVehicles = { -- Purchasable vehicles, make sure you have the vehicle information set in qb-core > shared > vehicles.lua
-                    ["Ambulance"] = { -- Vehicle name goes here
+                    ["Ambulance"] = {
                         Vehicle = "ambulance", -- The vehicle to spawn
                         TotalPrice = 2500, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
+                        TrunkItems = { -- Trunk items (This is totally optional)
+                            [1] = {
+                                name = "bandage",
+                                amount = 10,
+                                info = {},
+                                type = "item",
+                                slot = 1,
+                            },
+                        },
                     }, 
                 },
                 SpawnCoords = {
-                    VehicleSpawn = vector4(328.50579, -558.1343, 28.743787, 72.116554), -- Vehicle spawn and vehicle clear check coords
-                    PreviewSpawn = vector4(328.50579, -558.1343, 28.743787, 72.116554), -- Preview vehicle spawn coords
+                    VehicleSpawn = vector4(329.84863, -558.5644, 28.743801, 69.063636), -- Vehicle spawn and vehicle clear check coords
+                    PreviewSpawn = vector4(329.84863, -558.5644, 28.743801, 69.063636), -- Preview vehicle spawn coords
                     CheckRadius = 5.0, -- The radius the script checks for vehicle
                     CameraInformation = {
-                        CameraCoords = vector3(318.32107, -554.5611, 30.743787), -- Vehicle preview camera coords
-                        CameraRotation = vector3(-10.00, 0.00, 252.14), -- Vehicle preview camera rotation coords
-                        CameraFOV = 80.0, -- The vehicle preview camera fov value
+                        CameraCoords = vector3(321.73477, -555.7084, 30.743782), -- Vehicle preview camera coords
+                        CameraRotation = vector3(-10.00, 0.00, 253.18), -- Vehicle preview camera rotation coords
+                        CameraFOV = 70.0, -- The vehicle preview camera fov value
                     },
                 },
             },
             GeneralInformation = {
                 Blip = { -- If UseTarget set to true it uses the target ped coords and if false it uses the marker coords
                     BlipId = 357, -- The blip id. More can be found at : https://docs.fivem.net/docs/game-references/blips/
-                    BlipColour = 1, -- The blip colour. More can be found at : https://docs.fivem.net/docs/game-references/blips/
+                    BlipColour = 2, -- The blip colour. More can be found at : https://docs.fivem.net/docs/game-references/blips/
                     BlipScale = 0.4, -- The blip scale
                     Title = "EMS - Garage" -- The blip title string
                 },
                 TargetInformation = { -- If UseTarget set to true this is the required information
                     Ped = "a_m_y_smartcaspat_01", -- The ped model. More models can be found at : https://docs.fivem.net/docs/game-references/ped-models/
-                    Coords = vector4(333.84069, -561.9168, 27.743787, 338.39334), -- The ped coords
+                    Coords = vector4(333.92584, -561.8319, 27.743801, 341.15295), -- The ped coords
                     Scenario = "WORLD_HUMAN_CLIPBOARD", -- Ped scenario. More can be found at : https://wiki.rage.mp/index.php?title=Scenarios
                 },
             },  
