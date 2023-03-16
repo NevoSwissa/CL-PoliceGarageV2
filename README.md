@@ -43,3 +43,7 @@ Vehicle Purchase Menu:
 Livery System :
 
 ![image](https://user-images.githubusercontent.com/96447671/225422883-055538de-54fe-455a-a03b-328f7b889ba1.png)
+
+Vehicle Extras :
+![image](https://user-images.githubusercontent.com/96447671/225716334-65bf6814-a667-4e8d-96f8-d489d4dfd787.png)
+
