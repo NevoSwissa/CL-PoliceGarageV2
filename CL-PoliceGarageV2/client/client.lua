@@ -309,7 +309,7 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenExtrasMenu", function(data)
             isMenuHeader = true,
         }
     }
-    for i = 0, 12 do
+    for i = 1, 13 do
         if DoesExtraExist(data.vehicle, i) then
             if IsVehicleExtraTurnedOn(data.vehicle, i) then
                 table.insert(ExtrasMenu, {
