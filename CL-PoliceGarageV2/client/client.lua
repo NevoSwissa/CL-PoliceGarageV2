@@ -549,25 +549,21 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehic
 end)
 
 RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job, useownable, trunkitems)
-    if QBCore.Functions.SpawnClear(vector3(spawncoords.x, spawncoords.y, spawncoords.z), checkradius) then
-        QBCore.Functions.SpawnVehicle(vehicle, function(veh)
-            SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
-            exports[Config.FuelSystem]:SetFuel(veh, 100.0)
-            TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-            SetVehicleModKit(veh, 0)
-            SetVehicleDirtLevel(veh, 0.0)
-            TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
-            SetVehicleEngineOn(veh, true, true)
-            if trunkitems then
-                TriggerServerEvent("inventory:server:addTrunkItems", QBCore.Functions.GetPlate(veh), SetTrunkItemsInfo(trunkitems))
-            end
-            if useownable then
-                TriggerServerEvent("CL-PoliceGarageV2:AddData", "vehiclepurchased", vehicle, GetHashKey(veh), QBCore.Functions.GetPlate(veh), job)
-            end
-        end, spawncoords, true)
-    else
-        QBCore.Functions.Notify(Config.Locals["Notifications"]["VehicleInSpawn"], "error")
-    end
+    QBCore.Functions.SpawnVehicle(vehicle, function(veh)
+        SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
+        exports[Config.FuelSystem]:SetFuel(veh, 100.0)
+        TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+        SetVehicleModKit(veh, 0)
+        SetVehicleDirtLevel(veh, 0.0)
+        TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
+        SetVehicleEngineOn(veh, true, true)
+        if trunkitems then
+            TriggerServerEvent("inventory:server:addTrunkItems", QBCore.Functions.GetPlate(veh), SetTrunkItemsInfo(trunkitems))
+        end
+        if useownable then
+            TriggerServerEvent("CL-PoliceGarageV2:AddData", "vehiclepurchased", vehicle, GetHashKey(veh), QBCore.Functions.GetPlate(veh), job)
+        end
+    end, spawncoords, true)
 end)
 
 RegisterNetEvent("CL-PoliceGarageV2:ReturnRentedVehicle", function()
@@ -683,87 +679,91 @@ end)
 
 RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
     local player = PlayerPedId()
-    if not IsCamActive(VehicleCam) then
-        QBCore.Functions.SpawnVehicle(data.vehicle, function(veh)
-            SetEntityVisible(player, false, 1)
-            if Config.SetVehicleTransparency == 'low' then
-                SetEntityAlpha(veh, 200)
-            elseif Config.SetVehicleTransparency == 'medium' then
-                SetEntityAlpha(veh, 150)
-            elseif Config.SetVehicleTransparency == 'high' then
-                SetEntityAlpha(veh, 100)
-            elseif Config.SetVehicleTransparency == 'none' then
-                SetEntityAlpha(veh, 255)
-            end
-            FreezeEntityPosition(player, true)
-            SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
-            exports[Config.FuelSystem]:SetFuel(veh, 0.0)
-            SetVehicleDirtLevel(veh, 0.0)
-            FreezeEntityPosition(veh, true)
-            SetEntityCollision(veh, false, true)
-            SetVehicleEngineOn(veh, false, false)
-            DoScreenFadeOut(200)
-            Citizen.Wait(500)
-            DoScreenFadeIn(200)
-            SetVehicleUndriveable(veh, true)
-            VehicleCam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", data.coordsinfo['CameraInformation']['CameraCoords'].x, data.coordsinfo['CameraInformation']['CameraCoords'].y, data.coordsinfo['CameraInformation']['CameraCoords'].z, data.coordsinfo['CameraInformation']['CameraRotation'].x, data.coordsinfo['CameraInformation']['CameraRotation'].y, data.coordsinfo['CameraInformation']['CameraRotation'].z, data.coordsinfo['CameraInformation']['CameraFOV'], false, 0)
-            SetCamActive(VehicleCam, true)
-            RenderScriptCams(true, true, 500, true, true)
-            Citizen.CreateThread(function()
-                while IsCamActive(VehicleCam) do
-                    ShowHelpNotification("~INPUT_PICKUP~ to confirm your purchase. ~INPUT_CELLPHONE_CANCEL~ To cancel")
-                    if IsControlJustReleased(0, 177) then
-                        SetEntityVisible(player, true, 1)
-                        FreezeEntityPosition(player, false)
-                        PlaySoundFrontend(-1, "NO", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1)
-                        QBCore.Functions.DeleteVehicle(veh)
-                        DoScreenFadeOut(200)
-                        Citizen.Wait(500)
-                        DoScreenFadeIn(200)
-                        SetCamActive(VehicleCam, false)
-                        RenderScriptCams(false, false, 1, true, true)
-                        local Data = {
-                            userent = data.userent,
-                            rentvehicles = data.rentvehicles,
-                            purchasevehicles = data.purchasevehicles,
-                            coordsinfo = data.coordsinfo,
-                            job = data.job,
-                            station = data.station,
-                            useownable = data.useownable,
-                            useextras = data.useextras,
-                            usepurchasable = data.usepurchasable,
-                            useliveries = data.useliveries,
-                        }
-                        TriggerEvent("CL-PoliceGarageV2:OpenMainMenu", Data)
-                        break
-                    end
-                    if IsControlJustReleased(0, 38) then
-                        SetEntityVisible(player, true, 1)
-                        FreezeEntityPosition(player, false)
-                        PlaySoundFrontend(-1, "NO", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1)
-                        QBCore.Functions.DeleteVehicle(veh)
-                        DoScreenFadeOut(200)
-                        Citizen.Wait(500)
-                        DoScreenFadeIn(200)
-                        SetCamActive(VehicleCam, false)
-                        RenderScriptCams(false, false, 1, true, true)
-                        local VehicleData = {
-                            price = data.price,
-                            vehiclename = data.vehiclename,
-                            vehicle = data.vehicle,
-                            coordsinfo = data.coordsinfo,
-                            job = data.job,
-                            station = data.station,
-                            useownable = data.useownable,
-                            trunkitems = data.trunkitems,
-                        }
-                        TriggerEvent("CL-PoliceGarageV2:ChoosePayment", VehicleData)
-                        break
-                    end
-                    Citizen.Wait(1)
+    if QBCore.Functions.SpawnClear(vector3(spawncoords.x, spawncoords.y, spawncoords.z), checkradius) then
+        if not IsCamActive(VehicleCam) then
+            QBCore.Functions.SpawnVehicle(data.vehicle, function(veh)
+                SetEntityVisible(player, false, 1)
+                if Config.SetVehicleTransparency == 'low' then
+                    SetEntityAlpha(veh, 200)
+                elseif Config.SetVehicleTransparency == 'medium' then
+                    SetEntityAlpha(veh, 150)
+                elseif Config.SetVehicleTransparency == 'high' then
+                    SetEntityAlpha(veh, 100)
+                elseif Config.SetVehicleTransparency == 'none' then
+                    SetEntityAlpha(veh, 255)
                 end
-            end)
-        end, data.coordsinfo['PreviewSpawn'], true)
+                FreezeEntityPosition(player, true)
+                SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
+                exports[Config.FuelSystem]:SetFuel(veh, 0.0)
+                SetVehicleDirtLevel(veh, 0.0)
+                FreezeEntityPosition(veh, true)
+                SetEntityCollision(veh, false, true)
+                SetVehicleEngineOn(veh, false, false)
+                DoScreenFadeOut(200)
+                Citizen.Wait(500)
+                DoScreenFadeIn(200)
+                SetVehicleUndriveable(veh, true)
+                VehicleCam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", data.coordsinfo['CameraInformation']['CameraCoords'].x, data.coordsinfo['CameraInformation']['CameraCoords'].y, data.coordsinfo['CameraInformation']['CameraCoords'].z, data.coordsinfo['CameraInformation']['CameraRotation'].x, data.coordsinfo['CameraInformation']['CameraRotation'].y, data.coordsinfo['CameraInformation']['CameraRotation'].z, data.coordsinfo['CameraInformation']['CameraFOV'], false, 0)
+                SetCamActive(VehicleCam, true)
+                RenderScriptCams(true, true, 500, true, true)
+                Citizen.CreateThread(function()
+                    while IsCamActive(VehicleCam) do
+                        ShowHelpNotification("~INPUT_PICKUP~ to confirm your purchase. ~INPUT_CELLPHONE_CANCEL~ To cancel")
+                        if IsControlJustReleased(0, 177) then
+                            SetEntityVisible(player, true, 1)
+                            FreezeEntityPosition(player, false)
+                            PlaySoundFrontend(-1, "NO", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1)
+                            QBCore.Functions.DeleteVehicle(veh)
+                            DoScreenFadeOut(200)
+                            Citizen.Wait(500)
+                            DoScreenFadeIn(200)
+                            SetCamActive(VehicleCam, false)
+                            RenderScriptCams(false, false, 1, true, true)
+                            local Data = {
+                                userent = data.userent,
+                                rentvehicles = data.rentvehicles,
+                                purchasevehicles = data.purchasevehicles,
+                                coordsinfo = data.coordsinfo,
+                                job = data.job,
+                                station = data.station,
+                                useownable = data.useownable,
+                                useextras = data.useextras,
+                                usepurchasable = data.usepurchasable,
+                                useliveries = data.useliveries,
+                            }
+                            TriggerEvent("CL-PoliceGarageV2:OpenMainMenu", Data)
+                            break
+                        end
+                        if IsControlJustReleased(0, 38) then
+                            SetEntityVisible(player, true, 1)
+                            FreezeEntityPosition(player, false)
+                            PlaySoundFrontend(-1, "NO", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1)
+                            QBCore.Functions.DeleteVehicle(veh)
+                            DoScreenFadeOut(200)
+                            Citizen.Wait(500)
+                            DoScreenFadeIn(200)
+                            SetCamActive(VehicleCam, false)
+                            RenderScriptCams(false, false, 1, true, true)
+                            local VehicleData = {
+                                price = data.price,
+                                vehiclename = data.vehiclename,
+                                vehicle = data.vehicle,
+                                coordsinfo = data.coordsinfo,
+                                job = data.job,
+                                station = data.station,
+                                useownable = data.useownable,
+                                trunkitems = data.trunkitems,
+                            }
+                            TriggerEvent("CL-PoliceGarageV2:ChoosePayment", VehicleData)
+                            break
+                        end
+                        Citizen.Wait(1)
+                    end
+                end)
+            end, data.coordsinfo['PreviewSpawn'], true)
+        end
+    else
+        QBCore.Functions.Notify(Config.Locals["Notifications"]["VehicleInSpawn"], "error")
     end
 end)
 
