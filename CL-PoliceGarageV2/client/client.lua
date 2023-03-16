@@ -679,7 +679,7 @@ end)
 
 RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
     local player = PlayerPedId()
-    if QBCore.Functions.SpawnClear(vector3(spawncoords.x, spawncoords.y, spawncoords.z), checkradius) then
+    if QBCore.Functions.SpawnClear(vector3(data.coordsinfo['PreviewSpawn'].x, data.coordsinfo['PreviewSpawn'].y, data.coordsinfo['PreviewSpawn'].z), data.coordsinfo['CheckRadius']) then
         if not IsCamActive(VehicleCam) then
             QBCore.Functions.SpawnVehicle(data.vehicle, function(veh)
                 SetEntityVisible(player, false, 1)
