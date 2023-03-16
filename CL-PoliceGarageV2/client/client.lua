@@ -314,7 +314,7 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenExtrasMenu", function(data)
             if IsVehicleExtraTurnedOn(data.vehicle, i) then
                 table.insert(ExtrasMenu, {
                     header = "Toggle Extra " .. i .. " Off",
-                    icon = "fa-solid fa-circle-check",
+                    icon = "fa-solid fa-xmark",
                     params = {
                         event = "CL-PoliceGarageV2:VehicleExtra",
                         args = {
