@@ -11,6 +11,8 @@ New Features:
 - Vehicle renting. Vehicle renting system where players choose the minutes they want to rent a vehicle for with an option to return the vehicle for a refund
 - Blips can now be added & disabled
 - Secured events with bans and logs
+- Livery selection system
+- Vehicle extras feature
 - Now work with qb-target / marker. You can choose which type of interaction method you want a qb-target ped or a standalone gta native marker
 
 And much more cool features ! 
