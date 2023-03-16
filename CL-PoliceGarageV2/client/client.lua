@@ -494,6 +494,7 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenPurchaseMenu", function(data)
                         vehiclename = k,
                         vehicle = v.Vehicle,
                         trunkitems = v.TrunkItems,
+                        extras = v.DefaultExtras,
                         coordsinfo = data.coordsinfo,
                         station = data.station,
                         job = data.job,
@@ -548,7 +549,7 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehic
     end, spawncoords, true)
 end)
 
-RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job, useownable, trunkitems)
+RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job, useownable, trunkitems, extras)
     QBCore.Functions.SpawnVehicle(vehicle, function(veh)
         SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
         exports[Config.FuelSystem]:SetFuel(veh, 100.0)
@@ -559,6 +560,19 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, sp
         SetVehicleEngineOn(veh, true, true)
         if trunkitems then
             TriggerServerEvent("inventory:server:addTrunkItems", QBCore.Functions.GetPlate(veh), SetTrunkItemsInfo(trunkitems))
+        end
+        if extras then
+            for i = 0, 13 do
+                if DoesExtraExist(veh, i) then
+                    SetVehicleExtra(veh, i, 1)
+                end
+            end         
+            for i = 1, #extras do
+                local extra = extras[i]
+                if DoesExtraExist(veh, extra) then
+                    SetVehicleExtra(veh, extra, 0)
+                end
+            end
         end
         if useownable then
             TriggerServerEvent("CL-PoliceGarageV2:AddData", "vehiclepurchased", vehicle, GetHashKey(veh), QBCore.Functions.GetPlate(veh), job)
@@ -699,6 +713,19 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                 FreezeEntityPosition(veh, true)
                 SetEntityCollision(veh, false, true)
                 SetVehicleEngineOn(veh, false, false)
+                if data.extras and data.useextras then
+                    for i = 0, 13 do
+                        if DoesExtraExist(veh, i) then
+                            SetVehicleExtra(veh, i, 1)
+                        end
+                    end                        
+                    for i = 1, #data.extras do
+                        local extra = data.extras[i]
+                        if DoesExtraExist(veh, extra) then
+                            SetVehicleExtra(veh, extra, 0)
+                        end
+                    end
+                end
                 DoScreenFadeOut(200)
                 Citizen.Wait(500)
                 DoScreenFadeIn(200)
@@ -753,6 +780,7 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                                 station = data.station,
                                 useownable = data.useownable,
                                 trunkitems = data.trunkitems,
+                                extras = data.extras,
                             }
                             TriggerEvent("CL-PoliceGarageV2:ChoosePayment", VehicleData)
                             break
@@ -878,7 +906,7 @@ RegisterNetEvent("CL-PoliceGarageV2:ChoosePayment", function(data)
             }
         })
         if price ~= nil then
-            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station, data.useownable, data.trunkitems)
+            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station, data.useownable, data.trunkitems, data.extras)
         end
     end
 end)

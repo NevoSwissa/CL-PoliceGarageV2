@@ -64,6 +64,7 @@ Config.Locations = {
                         Vehicle = "police", -- The vehicle to spawn
                         TotalPrice = 5000, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
+                        DefaultExtras = { 1, 2 }, -- Default extras that the vehicle will spawn with (This is totally optional) the numbers represent the vehicle extra id (Keep empty to remove all extras)
                         TrunkItems = { -- Trunk items (This is totally optional)
                             [1] = {
                                 name = "heavyarmor",
