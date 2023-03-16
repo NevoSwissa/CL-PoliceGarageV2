@@ -713,7 +713,7 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                 FreezeEntityPosition(veh, true)
                 SetEntityCollision(veh, false, true)
                 SetVehicleEngineOn(veh, false, false)
-                if data.extras and data.useextras then
+                if data.extras then
                     for i = 0, 13 do
                         if DoesExtraExist(veh, i) then
                             SetVehicleExtra(veh, i, 1)
