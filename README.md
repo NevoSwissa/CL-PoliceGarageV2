@@ -46,5 +46,4 @@ Livery System :
 
 Vehicle Extras :
 
-![image](https://user-images.githubusercontent.com/96447671/225716334-65bf6814-a667-4e8d-96f8-d489d4dfd787.png)
-
+![image](https://user-images.githubusercontent.com/96447671/225718011-f532fce6-df98-478b-9aa5-ef3f7cdf6240.png)
