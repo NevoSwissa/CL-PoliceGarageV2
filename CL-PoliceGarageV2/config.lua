@@ -64,24 +64,26 @@ Config.Locations = {
                         Vehicle = "police", -- The vehicle to spawn
                         TotalPrice = 5000, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
-                        DefaultExtras = { 1, 2 }, -- Default extras that the vehicle will spawn with (This is totally optional) the numbers represent the vehicle extra id (Keep empty to remove all extras)
-                        DefaultLiveries = { -- Default liveries that the player would be spawned if the player have the required rank. if 2 liveries have the same required rank it will choose the first one (This is totally optional)
-                            ["Supervisor"] = { -- The livery name for example : Supervisor, patrol ghost etc
-                                RankRequired = 0, -- The minimum required rank for this livery
-                                LiveryID = 1, -- The livery id
-                            },                 
-                            ["Patrol"] = { -- The livery name for example : Supervisor, patrol ghost etc
-                                RankRequired = 2, -- The minimum required rank for this livery
-                                LiveryID = 5, -- The livery id
+                        VehicleSettings = { -- Everthing inside those brackets is totally optional (If you dont want to use it simply remove)
+                            DefaultExtras = { 1, 2 }, -- Default extras that the vehicle will spawn with the numbers to represent the vehicle extra id (Keep empty to remove all extras or delete to disable this feature)
+                            DefaultLiveries = { -- Default liveries that the player would be spawned if the player have the required rank. if 2 liveries have the same required rank it will choose the first one
+                                ["Supervisor"] = { -- The livery name for example : Supervisor, patrol ghost etc
+                                    RankRequired = 0, -- The minimum required rank for this livery
+                                    LiveryID = 1, -- The livery id
+                                },                 
+                                ["Patrol"] = { -- The livery name for example : Supervisor, patrol ghost etc
+                                    RankRequired = 2, -- The minimum required rank for this livery
+                                    LiveryID = 5, -- The livery id
+                                },
                             },
-                        },
-                        TrunkItems = { -- Trunk items (This is totally optional)
-                            [1] = {
-                                name = "heavyarmor",
-                                amount = 2,
-                                info = {},
-                                type = "item",
-                                slot = 1,
+                            TrunkItems = { -- Trunk items the vehicle would spawn with
+                                [1] = {
+                                    name = "heavyarmor",
+                                    amount = 2,
+                                    info = {},
+                                    type = "item",
+                                    slot = 1,
+                                },
                             },
                         },
                     }, 
@@ -89,11 +91,17 @@ Config.Locations = {
                         Vehicle = "police2", -- The vehicle to spawn
                         TotalPrice = 7500, -- The total price it costs to buy this vehicle
                         Rank = 1, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
+                        VehicleSettings = { -- Everthing inside those brackets is totally optional
+                            -- Example of how it should look like if you dont want to use any of those features
+                        },
                     }, 
                     ["Police Vehicle 3"] = {
                         Vehicle = "police3", -- The vehicle to spawn
                         TotalPrice = 10000, -- The total price it costs to buy this vehicle
                         Rank = 2, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
+                        VehicleSettings = { -- Everthing inside those brackets is totally optional
+                            -- Example of how it should look like if you dont want to use any of those features
+                        },
                     }, 
                 },
                 SpawnCoords = {
@@ -140,13 +148,15 @@ Config.Locations = {
                         Vehicle = "ambulance", -- The vehicle to spawn
                         TotalPrice = 2500, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
-                        TrunkItems = { -- Trunk items (This is totally optional)
-                            [1] = {
-                                name = "bandage",
-                                amount = 10,
-                                info = {},
-                                type = "item",
-                                slot = 1,
+                        VehicleSettings = { -- Everthing inside those brackets is totally optional
+                            TrunkItems = { -- Trunk items (This is optional)
+                                [1] = {
+                                    name = "bandage",
+                                    amount = 10,
+                                    info = {},
+                                    type = "item",
+                                    slot = 1,
+                                },
                             },
                         },
                     }, 

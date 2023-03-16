@@ -499,9 +499,9 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenPurchaseMenu", function(data)
                     price = v.TotalPrice,
                     vehiclename = k,
                     vehicle = v.Vehicle,
-                    trunkitems = v.TrunkItems,
-                    extras = v.DefaultExtras,
-                    liveries = v.DefaultLiveries,
+                    trunkitems = v.VehicleSettings['TrunkItems'],
+                    extras = v.VehicleSettings['DefaultExtras'],
+                    liveries = v.VehicleSettings['DefaultLiveries'],
                     coordsinfo = data.coordsinfo,
                     station = data.station,
                     job = data.job,
@@ -585,13 +585,13 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, sp
             for k, v in pairs(liveries) do
                 if PlayerJob.grade.level >= v.RankRequired then
                     if not matchedLivery then
-                        matchedLivery = v
+                        matchedLivery = {name = k, data = v}
                     end
                 end
             end
             if matchedLivery then
-                SetVehicleLivery(veh, matchedLivery.LiveryID)
-                QBCore.Functions.Notify(Config.Locals['Notifications']['LiverySet'] .. matchedLivery, "success")
+                SetVehicleLivery(veh, matchedLivery.data.LiveryID)
+                QBCore.Functions.Notify(Config.Locals['Notifications']['LiverySet'] .. matchedLivery.name, "success")
             end
         end
         if useownable then
