@@ -1,8 +1,6 @@
 Config = {}
 
-Config.LogsImage = "https://cdn.discordapp.com/attachments/926465631770005514/966038265130008576/CloudDevv.png" -- The image showen in the logs. No need to change
-
-Config.WebHook = "YOUR WEBHOOK" -- Your discord webhook if you would like to use discord logs
+Config.UseLogs = false -- Set to true to enable discord logs, using default QBCore logs system
 
 Config.BanWhenExploit = false -- Set to true if you want to ban players / cheaters when buying items without the job (Just another safety system (: )
 
@@ -21,7 +19,7 @@ Config.Locals = {
         GarageTarget = {
             Distance = 5.0,
             Icon = "fa fa-car",
-            Label = "Police Garage - ",  
+            Label = "Garage - ",  
         },
     },
 
@@ -33,10 +31,14 @@ Config.Locals = {
         VehicleReturned = "Vehicle returned. Vehicle ",
         SuccessfullyRented = " successfully rented for ",
         SuccessfullyBought = " successfully bought from ",
+        NotDriver = "You must be the driver !",
+        ExtraTurnedOn = " vehicle extra successfully got turned on",
+        ExtraTurnedOff = " vehicle extra successfully got turned off",
         VehicleInSpawn = 'Theres a vehicle in the spawn area !',
         NotInVehicle = "You are not in any vehicle !",
         LiverySwapped = "Vehicle livery has been successfully swapped",
         LeftVehicle = "You have left the vehicle",
+        IncorrectVehicle = "Incorrect vehicle ! you rented "
     },
 }
 
@@ -46,8 +48,9 @@ Config.Locations = {
             UseTarget = true, -- Set to false to use the Marker for this station
             UseRent = true, -- Set to false to disable the rent feature for this station (Garage WONT WORK if UseRent and UsePurchasable are set to false)
             UseOwnable = true, -- Set to false to disable ownable vehicles 
+            UseExtras = true, -- Set to false to disable the extras feature
             UsePurchasable = true, -- Set to false to disable purchasable vehicles (Garage WONT WORK if UseRent and UsePurchasable are set to false)
-            UseLiveries = true, -- Set to false to disable the livery menu
+            UseLiveries = true, -- Set to false to disable the livery feature
             JobRequired = "police", -- The job required for this station garage
             VehiclesInformation = {
                 RentVehicles = { -- Rent vehicles information, if UseRent set to true as : UseRent = true

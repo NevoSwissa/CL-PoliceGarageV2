@@ -1,24 +1,5 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
-local function DiscordLog(message)
-    local embed = {
-        {
-            ["color"] = 04255, 
-            ["title"] = "CloudDevelopment Police Garage",
-            ["description"] = message,
-            ["url"] = "https://discord.gg/e4AYS3VE",
-            ["footer"] = {
-            ["text"] = "By CloudDevelopment",
-            ["icon_url"] = Config.LogsImage
-        },
-            ["thumbnail"] = {
-                ["url"] = Config.LogsImage,
-            },
-    }
-}
-    PerformHttpRequest(Config.WebHook, function(err, text, headers) end, 'POST', json.encode({username = 'CL-PoliceGarage', embeds = embed, avatar_url = Config.LogsImage}), { ['Content-Type'] = 'application/json' })
-end
-
 RegisterServerEvent("CL-PoliceGarageV2:AddData", function(type, vehicle, hash, plate, job)
     local src = source
     if Config.BanWhenExploit and not Player.PlayerData.job.name == job then ExploitBan(src, 'Banned for exploiting') end
@@ -46,7 +27,7 @@ RegisterServerEvent('CL-PoliceGarageV2:RentVehicle', function(paymenttype, final
         TriggerClientEvent("CL-PoliceGarageV2:SpawnRentedVehicle", src, vehicle, vehiclename, finalPrice, time, os.time(), coordsinfo['VehicleSpawn'], paymenttype, job, station)  
         Player.Functions.RemoveMoney(paymenttype, finalPrice)
         TriggerClientEvent('QBCore:Notify', src, vehiclename .. Config.Locals["Notifications"]["SuccessfullyRented"] .. time .. " minutes", "success")  
-        DiscordLog('New Vehicle Rented By: **'..GetPlayerName(src)..'** ID: **' ..src.. '** Bought: **' ..vehiclename.. '** For: **' ..finalPrice.. '$**'..'** Minutes: **'..time) 
+        if Config.UseLogs then TriggerEvent("qb-log:server:CreateLog", "default", GetCurrentResourceName(), "blue", 'New vehicle rented by: **'..GetPlayerName(src)..'** Player ID: **' ..src.. '** Rented: **' ..vehiclename.. '** For: **' ..finalPrice.. '$**'..' Rented for: **'..time .. '** minutes', false) end
     else
         TriggerClientEvent('QBCore:Notify', src, Config.Locals["Notifications"]["NoMoney"], "error")              
     end    
@@ -60,7 +41,7 @@ RegisterServerEvent('CL-PoliceGarageV2:BuyVehicle', function(paymenttype, price,
         TriggerClientEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", src, vehicle, coordsinfo['VehicleSpawn'], coordsinfo['CheckRadius'], job, useownable, trunkitems)  
         Player.Functions.RemoveMoney(paymenttype, price)
         TriggerClientEvent('QBCore:Notify', src, vehiclename .. Config.Locals["Notifications"]["SuccessfullyBought"] .. station .. " garage", "success")  
-        DiscordLog('New Vehicle Bought By: **'..GetPlayerName(src)..'** ID: **' ..src.. '** Bought: **' ..vehiclename.. '** For: **' ..price.. '$**'..'** Station: **'..station) 
+        if Config.UseLogs then TriggerEvent("qb-log:server:CreateLog", "default", GetCurrentResourceName(), "blue", 'New vehicle purchased by: **'..GetPlayerName(src)..'** Player ID: **' ..src.. '** Bought: **' ..vehiclename.. '** For: **' ..price.. '$**'..' Station rented at: **'..station..'**', false) end
     else
         TriggerClientEvent('QBCore:Notify', src, Config.Locals["Notifications"]["NoMoney"], "error")              
     end    
