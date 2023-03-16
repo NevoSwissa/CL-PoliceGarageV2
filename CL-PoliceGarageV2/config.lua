@@ -2,13 +2,13 @@ Config = {}
 
 Config.UseLogs = false -- Set to true to enable discord logs, using default QBCore logs system
 
-Config.BanWhenExploit = false -- Set to true if you want to ban players / cheaters when buying items without the job (Just another safety system (: )
+Config.BanWhenExploit = false -- Set to true if you want to ban players / cheaters when buying items without the job (Just another safety system)
 
 Config.UseBlips = true -- Set to false to disable all script blips
 
 Config.RentMaximum = 60 -- The rent maximum allowed minutes
 
-Config.Target = "qb-target" -- The name of your target (If you renamed qb-target exports etc DOES NOT support other targets)
+Config.Target = "qb-target" -- The name of your target
 
 Config.FuelSystem = "LegacyFuel" -- Put here your fuel system LegacyFuel by default
 
@@ -36,7 +36,7 @@ Config.Locals = {
         ExtraTurnedOff = " vehicle extra successfully got turned off",
         VehicleInSpawn = 'Theres a vehicle in the spawn area !',
         NotInVehicle = "You are not in any vehicle !",
-        LiverySwapped = "Vehicle livery has been successfully swapped",
+        LiverySet = "Vehicle livery has been successfully set to ",
         LeftVehicle = "You have left the vehicle",
         IncorrectVehicle = "Incorrect vehicle ! you rented "
     },
@@ -65,6 +65,16 @@ Config.Locations = {
                         TotalPrice = 5000, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
                         DefaultExtras = { 1, 2 }, -- Default extras that the vehicle will spawn with (This is totally optional) the numbers represent the vehicle extra id (Keep empty to remove all extras)
+                        DefaultLiveries = { -- Default liveries that the player would be spawned if the player have the required rank. if 2 liveries have the same required rank it will choose the first one (This is totally optional)
+                            ["Supervisor"] = { -- The livery name for example : Supervisor, patrol ghost etc
+                                RankRequired = 0, -- The minimum required rank for this livery
+                                LiveryID = 1, -- The livery id
+                            },                 
+                            ["Patrol"] = { -- The livery name for example : Supervisor, patrol ghost etc
+                                RankRequired = 2, -- The minimum required rank for this livery
+                                LiveryID = 5, -- The livery id
+                            },
+                        },
                         TrunkItems = { -- Trunk items (This is totally optional)
                             [1] = {
                                 name = "heavyarmor",

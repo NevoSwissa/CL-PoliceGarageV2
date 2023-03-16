@@ -478,37 +478,43 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenPurchaseMenu", function(data)
             isMenuHeader = true,
         }
     }
-    table.sort(data.purchasevehicles, function(a, b)
-        return a.Rank >= b.Rank
-    end)
+    local sortedVehicles = {}
     for k, v in pairs(data.purchasevehicles) do
         if PlayerJob.grade.level >= v.Rank then
-            table.insert(VehicleMenu, {
-                header = "Purchase " .. k,
-                txt = "Purchase: " .. k .. "<br> For: " .. v.TotalPrice .. "$",
-                icon = "fa-solid fa-circle-check",
-                params = {
-                    event = "CL-PoliceGarageV2:StartPreview",
-                    args = {
-                        price = v.TotalPrice,
-                        vehiclename = k,
-                        vehicle = v.Vehicle,
-                        trunkitems = v.TrunkItems,
-                        extras = v.DefaultExtras,
-                        coordsinfo = data.coordsinfo,
-                        station = data.station,
-                        job = data.job,
-                        useownable = data.useownable,
-                        useliveries = data.useliveries,
-                        useextras = data.useextras,
-                        usepurchasable = data.usepurchasable,
-                        userent = data.userent,
-                        rentvehicles = data.rentvehicles,
-                        purchasevehicles = data.purchasevehicles,
-                    }
-                }
-            })
+            table.insert(sortedVehicles, {name = k, vehicle = v})
         end
+    end
+    table.sort(sortedVehicles, function(a, b)
+        return math.abs(PlayerJob.grade.level - a.vehicle.Rank) < math.abs(PlayerJob.grade.level - b.vehicle.Rank)
+    end)
+    for i = 1, #sortedVehicles do
+        local k, v = sortedVehicles[i].name, sortedVehicles[i].vehicle
+        table.insert(VehicleMenu, {
+            header = "Purchase " .. k,
+            txt = "Purchase: " .. k .. "<br> For: " .. v.TotalPrice .. "$",
+            icon = "fa-solid fa-circle-check",
+            params = {
+                event = "CL-PoliceGarageV2:StartPreview",
+                args = {
+                    price = v.TotalPrice,
+                    vehiclename = k,
+                    vehicle = v.Vehicle,
+                    trunkitems = v.TrunkItems,
+                    extras = v.DefaultExtras,
+                    liveries = v.DefaultLiveries,
+                    coordsinfo = data.coordsinfo,
+                    station = data.station,
+                    job = data.job,
+                    useownable = data.useownable,
+                    useliveries = data.useliveries,
+                    useextras = data.useextras,
+                    usepurchasable = data.usepurchasable,
+                    userent = data.userent,
+                    rentvehicles = data.rentvehicles,
+                    purchasevehicles = data.purchasevehicles,
+                }
+            }
+        })
     end
     table.insert(VehicleMenu, {
         header = "Go Back",
@@ -549,7 +555,7 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnRentedVehicle", function(vehicle, vehic
     end, spawncoords, true)
 end)
 
-RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job, useownable, trunkitems, extras)
+RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, spawncoords, checkradius, job, useownable, trunkitems, extras, liveries)
     QBCore.Functions.SpawnVehicle(vehicle, function(veh)
         SetVehicleNumberPlateText(veh, "LSPD"..tostring(math.random(1000, 9999)))
         exports[Config.FuelSystem]:SetFuel(veh, 100.0)
@@ -572,6 +578,20 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, sp
                 if DoesExtraExist(veh, extra) then
                     SetVehicleExtra(veh, extra, 0)
                 end
+            end
+        end
+        if liveries then
+            local matchedLivery = nil
+            for k, v in pairs(liveries) do
+                if PlayerJob.grade.level >= v.RankRequired then
+                    if not matchedLivery then
+                        matchedLivery = v
+                    end
+                end
+            end
+            if matchedLivery then
+                SetVehicleLivery(veh, matchedLivery.LiveryID)
+                QBCore.Functions.Notify(Config.Locals['Notifications']['LiverySet'] .. matchedLivery, "success")
             end
         end
         if useownable then
@@ -637,7 +657,7 @@ RegisterNetEvent("CL-PoliceGarageV2:StartSelection", function(data)
                             SetVehicleLivery(data.vehicle, currentLivery)
                             FreezeEntityPosition(data.vehicle, false)
                             SetEntityCollision(data.vehicle, true, true)
-                            QBCore.Functions.Notify(Config.Locals['Notifications']['LiverySwapped'], "success")
+                            QBCore.Functions.Notify(Config.Locals['Notifications']['LiverySet'] .. currentLivery, "success")
                             break
                         end
                         if IsControlJustReleased(0, 51) then
@@ -711,6 +731,7 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                 exports[Config.FuelSystem]:SetFuel(veh, 0.0)
                 SetVehicleDirtLevel(veh, 0.0)
                 FreezeEntityPosition(veh, true)
+                SetVehicleModKit(vehicle, 0)
                 SetEntityCollision(veh, false, true)
                 SetVehicleEngineOn(veh, false, false)
                 if data.extras then
@@ -724,6 +745,19 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                         if DoesExtraExist(veh, extra) then
                             SetVehicleExtra(veh, extra, 0)
                         end
+                    end
+                end
+                if data.liveries then
+                    local matchedLivery = nil
+                    for k, v in pairs(data.liveries) do
+                        if PlayerJob.grade.level >= v.RankRequired then
+                            if not matchedLivery then
+                                matchedLivery = v
+                            end
+                        end
+                    end
+                    if matchedLivery then
+                        SetVehicleLivery(veh, matchedLivery.LiveryID)
                     end
                 end
                 DoScreenFadeOut(200)
@@ -781,6 +815,7 @@ RegisterNetEvent("CL-PoliceGarageV2:StartPreview", function(data)
                                 useownable = data.useownable,
                                 trunkitems = data.trunkitems,
                                 extras = data.extras,
+                                liveries = data.liveries,
                             }
                             TriggerEvent("CL-PoliceGarageV2:ChoosePayment", VehicleData)
                             break
@@ -906,7 +941,7 @@ RegisterNetEvent("CL-PoliceGarageV2:ChoosePayment", function(data)
             }
         })
         if price ~= nil then
-            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station, data.useownable, data.trunkitems, data.extras)
+            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station, data.useownable, data.trunkitems, data.extras, data.liveries)
         end
     end
 end)
