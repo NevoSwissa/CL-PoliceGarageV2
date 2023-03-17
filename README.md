@@ -13,6 +13,7 @@ New Features:
 - Secured events with bans and logs
 - Livery selection system
 - Vehicle extras feature
+- Default vehicle extras and liveries that the vehicle would spawn with
 - Now work with qb-target / marker. You can choose which type of interaction method you want a qb-target ped or a standalone gta native marker
 
 And much more cool features ! 
