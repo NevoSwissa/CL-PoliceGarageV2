@@ -355,7 +355,6 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenExtrasMenu", function(data)
                         },
                     },
                 })
-                SetVehicleExtra(data.vehicle, selectedExtra, 0)
             end
         end
     end
@@ -591,6 +590,7 @@ RegisterNetEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", function(vehicle, sp
             end
             if matchedLivery then
                 SetVehicleLivery(veh, matchedLivery.data.LiveryID)
+                Citizen.Wait(5000)
                 QBCore.Functions.Notify(Config.Locals['Notifications']['LiverySet'] .. matchedLivery.name, "success")
             end
         end
