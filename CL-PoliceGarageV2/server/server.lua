@@ -2,9 +2,9 @@ local QBCore = exports['qb-core']:GetCoreObject()
 
 RegisterServerEvent("CL-PoliceGarageV2:AddData", function(type, vehicle, hash, plate, job)
     local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
     if Config.BanWhenExploit and not Player.PlayerData.job.name == job then ExploitBan(src, 'Banned for exploiting') end
     if type == "vehiclepurchased" then
-        local Player = QBCore.Functions.GetPlayer(src)
         MySQL.Async.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {
             Player.PlayerData.license,
             Player.PlayerData.citizenid,
@@ -33,18 +33,18 @@ RegisterServerEvent('CL-PoliceGarageV2:RentVehicle', function(paymenttype, final
     end    
 end)
 
-RegisterServerEvent('CL-PoliceGarageV2:BuyVehicle', function(paymenttype, price, vehiclename, vehicle, coordsinfo, job, station, useownable, trunkitems, extras, liveries)
+RegisterServerEvent('CL-PoliceGarageV2:BuyVehicle', function(data)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
-    if Config.BanWhenExploit and not Player.PlayerData.job.name == job then ExploitBan(src, 'Banned for exploiting') end
-    if Player.Functions.GetMoney(paymenttype) >= price then
-        TriggerClientEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", src, vehicle, coordsinfo['VehicleSpawn'], coordsinfo['CheckRadius'], job, useownable, trunkitems, extras, liveries)  
-        Player.Functions.RemoveMoney(paymenttype, price)
-        TriggerClientEvent('QBCore:Notify', src, vehiclename .. Config.Locals["Notifications"]["SuccessfullyBought"] .. station .. " garage", "success")  
+    if Config.BanWhenExploit and not Player.PlayerData.job.name == data.job then ExploitBan(src, 'Banned for exploiting') end
+    if Player.Functions.GetMoney(data.paymenttype) >= data.price then
+        TriggerClientEvent("CL-PoliceGarageV2:SpawnPurchasedVehicle", src, data.vehicle, data.coordsinfo['VehicleSpawn'], data.coordsinfo['CheckRadius'], data.job, data.useownable, data.trunkitems, data.extras, data.liveries)  
+        Player.Functions.RemoveMoney(data.paymenttype, data.price)
+        TriggerClientEvent('QBCore:Notify', src, data.vehiclename .. Config.Locals["Notifications"]["SuccessfullyBought"] .. data.station .. " garage", "success")  
         if Config.UseLogs then TriggerEvent("qb-log:server:CreateLog", "default", GetCurrentResourceName(), "blue", 'New vehicle purchased by: **'..GetPlayerName(src)..'** Player ID: **' ..src.. '** Bought: **' ..vehiclename.. '** For: **' ..price.. '$**'..' Station rented at: **'..station..'**', false) end
     else
         TriggerClientEvent('QBCore:Notify', src, Config.Locals["Notifications"]["NoMoney"], "error")              
-    end    
+    end  
 end)
 
 RegisterServerEvent('CL-PoliceGarageV2:RefundRent', function(paymenttype, refund, clientsource, job)

@@ -134,7 +134,7 @@ CreateThread(function()
                             event = "CL-PoliceGarageV2:OpenMainMenu",
                             icon = Config.Locals['Targets']['GarageTarget']['Icon'],
                             label = Config.Locals['Targets']['GarageTarget']['Label'] .. k,
-                            job = v.RequiredJob,
+                            job = v.JobRequired,
                             userent = v.UseRent,
                             usepurchasable = v.UsePurchasable,
                             useownable = v.UseOwnable,
@@ -144,12 +144,6 @@ CreateThread(function()
                             purchasevehicles = v.VehiclesInformation['PurchaseVehicles'],
                             coordsinfo = v.VehiclesInformation['SpawnCoords'],
                             station = k,
-                            canInteract = function()
-                                if PlayerJob.name == v.JobRequired then
-                                    return true
-                                end
-                                return false
-                            end,
                         },
                     },
                     distance = Config.Locals['Targets']['GarageTarget']['Distance'],
@@ -916,15 +910,15 @@ RegisterNetEvent("CL-PoliceGarageV2:ChoosePayment", function(data)
                     {
                         value = "bank",
                         text = "Bank"
-                    }
-                }
-            }
-        }
+                    },
+                },
+            },
+        },
     })
     if paymentType ~= nil then
         local price = exports["qb-input"]:ShowInput({
             header = "Final Price",
-            submitText = "Rent",
+            submitText = "Purchase",
             inputs = {
                 {
                     text = 'Final Price: $' .. data.price,
@@ -941,7 +935,19 @@ RegisterNetEvent("CL-PoliceGarageV2:ChoosePayment", function(data)
             }
         })
         if price ~= nil then
-            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", paymentType.paymenttype, data.price, data.vehiclename, data.vehicle, data.coordsinfo, data.job, data.station, data.useownable, data.trunkitems, data.extras, data.liveries)
+            TriggerServerEvent("CL-PoliceGarageV2:BuyVehicle", {
+                paymenttype = paymentType.paymenttype, 
+                price = data.price,
+                vehiclename = data.vehiclename,
+                vehicle = data.vehicle,
+                coordsinfo = data.coordsinfo,
+                job = data.job,
+                station = data.station,
+                useownable = data.useownable,
+                extras = data.extras,
+                trunkitems = data.trunkitems,
+                liveries = data.liveries,
+            })
         end
     end
 end)
