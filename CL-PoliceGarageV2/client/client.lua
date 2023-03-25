@@ -657,6 +657,32 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenNearMenu", function(data)
             isMenuHeader = true,
         }
     }
+    table.insert(PlayersMenu, {
+        header = "You",
+        txt = "Purchase " .. data.vehiclename .. " for yourself",
+        icon = "fa-solid fa-user-check",
+        params = {
+            isServer = true,
+            event = "CL-PoliceGarageV2:BuyVehicle",
+            args = {
+                id = tonumber(GetPlayerServerId(PlayerId())),
+                name = GetPlayerName(PlayerId()),
+                buyer = tonumber(GetPlayerServerId(PlayerId())),
+                paymenttype = data.paymenttype, 
+                price = data.price,
+                vehiclename = data.vehiclename,
+                vehicle = data.vehicle,
+                coordsinfo = data.coordsinfo,
+                rank = data.rank,
+                job = data.job,
+                station = data.station,
+                useownable = data.useownable,
+                extras = data.extras,
+                trunkitems = data.trunkitems,
+                liveries = data.liveries,
+            },
+        }
+    })
     if not GetNearbyPlayers(PlayerPedId(), Config.CompanyFunds['CheckDistance'], data.job) then
         table.insert(PlayersMenu, {
             header = "No Nearby Players",

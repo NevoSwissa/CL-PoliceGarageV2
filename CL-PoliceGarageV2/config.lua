@@ -71,7 +71,7 @@ Config.Locations = {
                     ["Police Vehicle 1"] = {
                         Vehicle = "police", -- The vehicle to spawn
                         TotalPrice = 5000, -- The total price it costs to buy this vehicle
-                        Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
+                        Rank = 1, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
                         VehicleSettings = { -- Everthing inside those brackets is totally optional (For things you dont want to use simply remove)
                             DefaultExtras = { 1, 2 }, -- Default extras that the vehicle will spawn with the numbers to represent the vehicle extra id (Keep empty to remove all extras or delete to disable this feature)
                             DefaultLiveries = { -- Default liveries that the player would be spawned if the player have the required rank.
@@ -95,28 +95,12 @@ Config.Locations = {
                             },
                         },
                     }, 
-                    ["Ferrai F1-75"] = {
-                        Vehicle = "f175", -- The vehicle to spawn
-                        TotalPrice = 7500, -- The total price it costs to buy this vehicle
-                        Rank = 2, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
-                        VehicleSettings = { -- Everthing inside those brackets is totally optional
-                            -- Example of how it should look like if you dont want to use any of those features
-                        },
-                    }, 
-                    ["Mercedes EQS"] = {
-                        Vehicle = "gcmeqs2022", -- The vehicle to spawn
-                        TotalPrice = 12500, -- The total price it costs to buy this vehicle
+                    ["Police 1"] = {
+                        Vehicle = "police", -- The vehicle to spawn
+                        TotalPrice = 5000, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
                         VehicleSettings = { -- Everthing inside those brackets is totally optional
-                            TrunkItems = { -- Trunk items the vehicle would spawn with
-                                [1] = {
-                                    name = "bandage",
-                                    amount = 20,
-                                    info = {},
-                                    type = "item",
-                                    slot = 1,
-                                },
-                            },
+                            -- Example of how it should look like if you dont want to use any of those features
                         },
                     }, 
                 },
