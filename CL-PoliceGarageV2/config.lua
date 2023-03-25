@@ -2,17 +2,22 @@ Config = {}
 
 Config.UseLogs = false -- Set to true to enable discord logs, using default QBCore logs system
 
-Config.BanWhenExploit = false -- Set to true if you want to ban players / cheaters when buying items without the job (Just another safety system)
+Config.BanWhenExploit = true -- Set to true if you want to ban players / cheaters (Just another safety system)
+
+Config.CompanyFunds = {
+    Enable = false, -- Set to false to disable the company funds feature (Havent been tested completely. NOT recommended to use)
+    CheckDistance = 10.0, -- The radius that the script checks for nearby players (If Enable)
+}
 
 Config.UseBlips = true -- Set to false to disable all script blips
 
-Config.RentMaximum = 60 -- The rent maximum allowed minutes
+Config.RentMaximum = 60 -- The rent maximum allowed in minutes
 
 Config.Target = "qb-target" -- The name of your target
 
-Config.FuelSystem = "LegacyFuel" -- Put here your fuel system LegacyFuel by default
+Config.FuelSystem = "LegacyFuel" -- The fuel system, LegacyFuel by default
 
-Config.SetVehicleTransparency = 'none' -- Want to make the vehicle more transparent? you have a lot of options to choose from: low, medium, high, none
+Config.SetVehicleTransparency = 'none' -- The vehicle transparency level for the preview. Options : low, medium, high, none
 
 Config.Locals = {
     Targets = {
@@ -33,7 +38,10 @@ Config.Locals = {
         SuccessfullyBought = " successfully bought from ",
         NotDriver = "You must be the driver !",
         ExtraTurnedOn = " vehicle extra successfully got turned on",
+        NoFunds = "There isnt enough funds for ",
         ExtraTurnedOff = " vehicle extra successfully got turned off",
+        NoJob = " doesnt have the correct job",
+        NoRank = " doesnt have the correct required rank",
         VehicleInSpawn = 'Theres a vehicle in the spawn area !',
         NotInVehicle = "You are not in any vehicle !",
         LiverySet = "Vehicle livery has been successfully set to ",
@@ -44,14 +52,14 @@ Config.Locals = {
 
 Config.Locations = {
     Stations = {
-        ["MRPD"] = { -- Full template, inculdes all script features
+        ["MRPD"] = { -- Full template, inculdes all script features (The string is the garage name used as the station / garage name)
             UseTarget = true, -- Set to false to use the Marker for this station
             UseRent = true, -- Set to false to disable the rent feature for this station (Garage WONT WORK if UseRent and UsePurchasable are set to false)
             UseOwnable = true, -- Set to false to disable ownable vehicles 
             UseExtras = true, -- Set to false to disable the extras feature
             UsePurchasable = true, -- Set to false to disable purchasable vehicles (Garage WONT WORK if UseRent and UsePurchasable are set to false)
             UseLiveries = true, -- Set to false to disable the livery feature
-            JobRequired = "police", -- The job required for this station garage
+            JobRequired = "police", -- The job required for this station garage; For 1 job use, for multiple jobs JobRequired = {"job1", "job2"}, for all job use JobRequired = "all"
             VehiclesInformation = {
                 RentVehicles = { -- Rent vehicles information, if UseRent set to true as : UseRent = true
                     ["Bati"] = {
@@ -64,7 +72,7 @@ Config.Locations = {
                         Vehicle = "police", -- The vehicle to spawn
                         TotalPrice = 5000, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
-                        VehicleSettings = { -- Everthing inside those brackets is totally optional (If you dont want to use it simply remove)
+                        VehicleSettings = { -- Everthing inside those brackets is totally optional (For things you dont want to use simply remove)
                             DefaultExtras = { 1, 2 }, -- Default extras that the vehicle will spawn with the numbers to represent the vehicle extra id (Keep empty to remove all extras or delete to disable this feature)
                             DefaultLiveries = { -- Default liveries that the player would be spawned if the player have the required rank.
                                 ["Supervisor"] = { -- The livery name for example : Supervisor, patrol ghost etc
@@ -87,20 +95,28 @@ Config.Locations = {
                             },
                         },
                     }, 
-                    ["Police Vehicle 2"] = {
-                        Vehicle = "police2", -- The vehicle to spawn
+                    ["Ferrai F1-75"] = {
+                        Vehicle = "f175", -- The vehicle to spawn
                         TotalPrice = 7500, -- The total price it costs to buy this vehicle
-                        Rank = 1, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
+                        Rank = 2, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
                         VehicleSettings = { -- Everthing inside those brackets is totally optional
                             -- Example of how it should look like if you dont want to use any of those features
                         },
                     }, 
-                    ["Police Vehicle 3"] = {
-                        Vehicle = "police3", -- The vehicle to spawn
-                        TotalPrice = 10000, -- The total price it costs to buy this vehicle
-                        Rank = 2, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
+                    ["Mercedes EQS"] = {
+                        Vehicle = "gcmeqs2022", -- The vehicle to spawn
+                        TotalPrice = 12500, -- The total price it costs to buy this vehicle
+                        Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
                         VehicleSettings = { -- Everthing inside those brackets is totally optional
-                            -- Example of how it should look like if you dont want to use any of those features
+                            TrunkItems = { -- Trunk items the vehicle would spawn with
+                                [1] = {
+                                    name = "bandage",
+                                    amount = 20,
+                                    info = {},
+                                    type = "item",
+                                    slot = 1,
+                                },
+                            },
                         },
                     }, 
                 },
@@ -134,7 +150,53 @@ Config.Locations = {
                 },
             },  
         },
-        ["EMS"] = {
+        ["Legion Renting"] = { -- Used as the station / garage name
+            UseTarget = true, -- Set to false to use the Marker for this station
+            UseRent = true, -- Set to false to disable the rent feature for this station (Garage WONT WORK if UseRent and UsePurchasable are set to false)
+            UseOwnable = false, -- Set to false to disable ownable vehicles 
+            UsePurchasable = false, -- Set to false to disable purchasable vehicles (Garage WONT WORK if UseRent and UsePurchasable are set to false)
+            UseExtras = true, -- Set to false to disable the extras feature
+            UseLiveries = false, -- Set to false to disable the livery menu
+            JobRequired = "all", -- The job required for this station garage
+            VehiclesInformation = {
+                RentVehicles = { -- Rent vehicles information, if UseRent set to true as : UseRent = true
+                    ["T20"] = {
+                        Vehicle = "t20", -- The vehicle to spawn
+                        PricePerMinute = 250, -- The price to charge for that vehicle every minute
+                    }, 
+                    ["Bati"] = {
+                        Vehicle = "bati", -- The vehicle to spawn
+                        PricePerMinute = 25, -- The price to charge for that vehicle every minute
+                    }, 
+                    ["Sultan"] = {
+                        Vehicle = "sultan", -- The vehicle to spawn
+                        PricePerMinute = 75, -- The price to charge for that vehicle every minute
+                    }, 
+                    ["Baller 2"] = {
+                        Vehicle = "baller2", -- The vehicle to spawn
+                        PricePerMinute = 200, -- The price to charge for that vehicle every minute
+                    }, 
+                },
+                SpawnCoords = {
+                    VehicleSpawn = vector4(111.21327, -1081.616, 29.192338, 339.8222), -- Vehicle spawn and vehicle clear check coords
+                    CheckRadius = 5.0, -- The radius the script checks for vehicle
+                },
+            },
+            GeneralInformation = {
+                Blip = { -- If UseTarget set to true it uses the target ped coords and if false it uses the marker coords
+                    BlipId = 357, -- The blip id. More can be found at : https://docs.fivem.net/docs/game-references/blips/
+                    BlipColour = 2, -- The blip colour. More can be found at : https://docs.fivem.net/docs/game-references/blips/
+                    BlipScale = 0.4, -- The blip scale
+                    Title = "Legion - Rental" -- The blip title string
+                },
+                TargetInformation = { -- If UseTarget set to true this is the required information
+                    Ped = "a_m_y_smartcaspat_01", -- The ped model. More models can be found at : https://docs.fivem.net/docs/game-references/ped-models/
+                    Coords = vector4(109.51409, -1089.702, 28.302473, 343.76), -- The ped coords
+                    Scenario = "WORLD_HUMAN_CLIPBOARD", -- Ped scenario. More can be found at : https://wiki.rage.mp/index.php?title=Scenarios
+                },
+            },  
+        },
+        ["EMS"] = { -- Used as the station / garage name
             UseTarget = true, -- Set to false to use the Marker for this station
             UseRent = false, -- Set to false to disable the rent feature for this station (Garage WONT WORK if UseRent and UsePurchasable are set to false)
             UseOwnable = true, -- Set to false to disable ownable vehicles 
