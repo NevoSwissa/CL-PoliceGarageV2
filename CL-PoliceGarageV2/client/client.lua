@@ -596,9 +596,10 @@ RegisterNetEvent("CL-PoliceGarageV2:OpenPurchaseMenu", function(data)
     end)
     for i = 1, #sortedVehicles do
         local k, v = sortedVehicles[i].name, sortedVehicles[i].vehicle
+        local priceText = (v.TotalPrice ~= 0) and (v.TotalPrice .. "$") or "Free"
         table.insert(VehicleMenu, {
             header = "Purchase " .. k,
-            txt = "Purchase: " .. k .. "<br> For: " .. v.TotalPrice .. "$",
+            txt = "Purchase: " .. k .. "<br> For: " .. priceText,
             icon = "fa-solid fa-circle-check",
             params = {
                 event = "CL-PoliceGarageV2:StartPreview",

@@ -2,7 +2,7 @@ Config = {}
 
 Config.UseLogs = false -- Set to true to enable discord logs, using default QBCore logs system
 
-Config.BanWhenExploit = true -- Set to true if you want to ban players / cheaters (Just another safety system)
+Config.BanWhenExploit = false -- Set to true if you want to ban players / cheaters (Just another safety system)
 
 Config.CompanyFunds = {
     Enable = false, -- Set to false to disable the company funds feature (Havent been tested completely. NOT recommended to use)
@@ -97,7 +97,7 @@ Config.Locations = {
                     }, 
                     ["Police 1"] = {
                         Vehicle = "police", -- The vehicle to spawn
-                        TotalPrice = 5000, -- The total price it costs to buy this vehicle
+                        TotalPrice = 0, -- The total price it costs to buy this vehicle
                         Rank = 0, -- The rank required to purchase this vehicle. Set to 0 to enable all ranks
                         VehicleSettings = { -- Everthing inside those brackets is totally optional
                             -- Example of how it should look like if you dont want to use any of those features
